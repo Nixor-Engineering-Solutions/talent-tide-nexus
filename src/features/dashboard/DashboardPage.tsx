@@ -952,6 +952,198 @@ const DashboardAnalyticsTab = ({ profile }: { profile: any }) => {
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   MESSAGES TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+const MessagesTab = () => {
+  const { user, profile } = useAuth();
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [selectedConvo, setSelectedConvo] = useState<any | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [newConvoUserId, setNewConvoUserId] = useState("");
+  const [showNewConvo, setShowNewConvo] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("conversations")
+        .select("*")
+        .or(`participant_one.eq.${user.id},participant_two.eq.${user.id}`)
+        .order("last_message_at", { ascending: false });
+
+      if (data) {
+        const otherIds = data.map(c => c.participant_one === user.id ? c.participant_two : c.participant_one);
+        const uniqueIds = [...new Set(otherIds)];
+        let profileMap: Record<string, any> = {};
+        if (uniqueIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("user_id, display_name, full_name, avatar_emoji, elo")
+            .in("user_id", uniqueIds);
+          profiles?.forEach(p => { profileMap[p.user_id] = p; });
+        }
+        setConversations(data.map(c => ({
+          ...c,
+          otherUser: profileMap[c.participant_one === user.id ? c.participant_two : c.participant_one] || { display_name: "Unknown User", avatar_emoji: "?" },
+        })));
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
+
+  useEffect(() => {
+    if (!selectedConvo) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("direct_messages")
+        .select("*")
+        .eq("conversation_id", selectedConvo.id)
+        .order("created_at", { ascending: true });
+      setMessages(data || []);
+      await supabase.from("direct_messages").update({ is_read: true }).eq("conversation_id", selectedConvo.id).neq("sender_id", user!.id);
+    };
+    load();
+    const channel = supabase
+      .channel(`dm-${selectedConvo.id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "direct_messages", filter: `conversation_id=eq.${selectedConvo.id}` }, (payload) => {
+        setMessages(prev => [...prev, payload.new]);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [selectedConvo, user]);
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !selectedConvo || !user) return;
+    const content = newMessage.trim();
+    setNewMessage("");
+    await supabase.from("direct_messages").insert({ conversation_id: selectedConvo.id, sender_id: user.id, content });
+    await supabase.from("conversations").update({ last_message_at: new Date().toISOString(), last_message_preview: content.slice(0, 100) }).eq("id", selectedConvo.id);
+  };
+
+  const startNewConversation = async () => {
+    if (!newConvoUserId.trim() || !user) return;
+    const { data: targetProfile } = await supabase.from("profiles").select("user_id, display_name").or(`user_id.eq.${newConvoUserId},display_name.ilike.%${newConvoUserId}%`).limit(1).single();
+    if (!targetProfile) { toast.error("User not found"); return; }
+    const { data: existing } = await supabase.from("conversations").select("*").or(`and(participant_one.eq.${user.id},participant_two.eq.${targetProfile.user_id}),and(participant_one.eq.${targetProfile.user_id},participant_two.eq.${user.id})`).limit(1);
+    if (existing && existing.length > 0) { setSelectedConvo(existing[0]); setShowNewConvo(false); return; }
+    const { data: newConvo } = await supabase.from("conversations").insert({ participant_one: user.id, participant_two: targetProfile.user_id }).select().single();
+    if (newConvo) { setSelectedConvo(newConvo); setShowNewConvo(false); setNewConvoUserId(""); }
+  };
+
+  const formatTime = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - d.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return "now";
+    if (diffMins < 60) return `${diffMins}m`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h`;
+    return d.toLocaleDateString();
+  };
+
+  return (
+    <div className="flex gap-0 h-[calc(100vh-8rem)] rounded-2xl border border-border bg-card overflow-hidden">
+      <div className={`w-80 border-r border-border flex flex-col shrink-0 ${selectedConvo ? 'hidden lg:flex' : 'flex'}`}>
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-heading text-lg font-bold text-foreground">Messages</h3>
+            <button onClick={() => setShowNewConvo(!showNewConvo)} className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition">
+              <Plus size={16} />
+            </button>
+          </div>
+          {showNewConvo && (
+            <div className="flex gap-2 mb-3">
+              <input value={newConvoUserId} onChange={(e) => setNewConvoUserId(e.target.value)} placeholder="User ID or display name" className="flex-1 px-3 py-1.5 bg-surface-1 border border-border rounded-lg text-sm" onKeyDown={(e) => e.key === "Enter" && startNewConversation()} />
+              <button onClick={startNewConversation} className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm"><Send size={14} /></button>
+            </div>
+          )}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search conversations..." className="w-full pl-9 pr-3 py-2 bg-surface-1 border border-border rounded-lg text-sm" />
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {loading ? (
+            <div className="py-12 text-center"><div className="h-5 w-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin mx-auto" /></div>
+          ) : conversations.length === 0 ? (
+            <div className="py-12 text-center px-4">
+              <MessageSquare size={32} className="mx-auto mb-3 text-muted-foreground/30" />
+              <p className="text-sm text-muted-foreground">No conversations yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Start a conversation from a user's profile</p>
+            </div>
+          ) : conversations.map(convo => (
+            <button key={convo.id} onClick={() => setSelectedConvo(convo)} className={`w-full text-left px-4 py-3 border-b border-border/50 hover:bg-surface-1 transition-colors ${selectedConvo?.id === convo.id ? 'bg-surface-1' : ''}`}>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-2 text-sm font-bold shrink-0">{convo.otherUser?.avatar_emoji || "?"}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-foreground truncate">{convo.otherUser?.display_name || "User"}</p>
+                    <span className="text-[10px] text-muted-foreground shrink-0">{formatTime(convo.last_message_at)}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">{convo.last_message_preview || "Start chatting..."}</p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={`flex-1 flex flex-col ${!selectedConvo ? 'hidden lg:flex' : 'flex'}`}>
+        {selectedConvo ? (
+          <>
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+              <button onClick={() => setSelectedConvo(null)} className="lg:hidden text-muted-foreground hover:text-foreground"><ChevronLeft size={20} /></button>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-2 text-sm font-bold">{selectedConvo.otherUser?.avatar_emoji || "?"}</div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">{selectedConvo.otherUser?.display_name || "User"}</p>
+                <p className="text-[10px] text-muted-foreground">ELO {selectedConvo.otherUser?.elo || "N/A"}</p>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {messages.length === 0 && (
+                <div className="py-12 text-center">
+                  <MessageSquare size={32} className="mx-auto mb-3 text-muted-foreground/20" />
+                  <p className="text-sm text-muted-foreground">No messages yet. Say hello!</p>
+                </div>
+              )}
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${msg.sender_id === user?.id ? 'bg-primary text-primary-foreground rounded-br-md' : 'bg-surface-1 text-foreground rounded-bl-md'}`}>
+                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    <p className={`text-[10px] mt-1 ${msg.sender_id === user?.id ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>{formatTime(msg.created_at)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-border p-4">
+              <div className="flex items-center gap-2">
+                <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()} placeholder="Type a message..." className="flex-1 px-4 py-2.5 bg-surface-1 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                <button onClick={sendMessage} disabled={!newMessage.trim()} className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition"><Send size={16} /></button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <MessageSquare size={48} className="mx-auto mb-4 text-muted-foreground/20" />
+              <h3 className="text-lg font-semibold text-foreground mb-1">Select a conversation</h3>
+              <p className="text-sm text-muted-foreground">Choose a chat from the sidebar or start a new one</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
    DASHBOARD SIDEBAR COMPONENT
 ═══════════════════════════════════════════════════════════════════════════ */
 
