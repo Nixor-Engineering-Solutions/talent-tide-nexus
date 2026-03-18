@@ -1026,6 +1026,7 @@ const DashboardPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "overview": return <OverviewTab profile={profile} />;
+      case "messages": return <MessagesTab />;
       case "my-gigs": return <MyGigsTab />;
       case "create-gig": return <CreateGigTab />;
       case "skill-court": return <SkillCourtTab />;
