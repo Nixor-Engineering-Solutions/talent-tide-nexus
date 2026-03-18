@@ -40,6 +40,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 const sidebarItems = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "messages", label: "Messages", icon: MessageSquare },
   { id: "my-gigs", label: "My Gigs", icon: Briefcase },
   { id: "create-gig", label: "Create Gig", icon: Plus },
   { id: "skill-court", label: "Skill Court", icon: Scale },
