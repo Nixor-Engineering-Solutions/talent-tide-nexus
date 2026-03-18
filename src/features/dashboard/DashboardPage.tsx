@@ -10,8 +10,9 @@ import {
   Send, Paperclip, Tag, DollarSign, Layers, GitMerge, Timer, Crown,
   ChevronLeft, User, Building2, BarChart3, Wallet, History, Heart,
   Target, Coins, GraduationCap, MapPin, Globe, Edit3, Camera, Upload,
-  Palette, Code, PenTool, Video, Music, BarChart, Megaphone, Cpu
+  Palette, Code, PenTool, Video, Music, BarChart, Megaphone, Cpu, Search
 } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
