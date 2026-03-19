@@ -26,7 +26,14 @@ type Gig = {
   views: number;
 };
 
-const fallbackGigs: Gig[] = [];
+const fallbackGigs: Gig[] = [
+  { title: "Full-Stack Web App", wants: "Logo & Brand Design", points: 45, seller: "DevMaster", elo: 1650, rating: 4.9, avatar: "DM", hot: true, posted: "2h", views: 124 },
+  { title: "UI/UX Redesign", wants: "Backend API Development", points: 30, seller: "PixelPro", elo: 1520, rating: 4.8, avatar: "PP", hot: false, posted: "5h", views: 89 },
+  { title: "Video Editing — YouTube", wants: "Thumbnail Design", points: 20, seller: "ClipKing", elo: 1380, rating: 4.7, avatar: "CK", hot: true, posted: "1h", views: 201 },
+  { title: "SEO Content Writing", wants: "Social Media Graphics", points: 15, seller: "WordSmith", elo: 1440, rating: 4.6, avatar: "WS", hot: false, posted: "8h", views: 56 },
+  { title: "React Native App", wants: "Marketing Strategy", points: 50, seller: "AppForge", elo: 1710, rating: 4.9, avatar: "AF", hot: true, posted: "30m", views: 312 },
+  { title: "Data Analysis Report", wants: "Presentation Design", points: 25, seller: "DataWiz", elo: 1560, rating: 4.8, avatar: "DW", hot: false, posted: "3h", views: 67 },
+];
 
 const timeAgo = (dateStr: string) => {
   const diff = Date.now() - new Date(dateStr).getTime();
