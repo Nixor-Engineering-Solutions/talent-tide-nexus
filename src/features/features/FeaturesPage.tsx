@@ -25,6 +25,9 @@ const featureCategories = [
   { id: "court", label: "Skill Court", icon: Scale, color: "text-alert-red", bg: "bg-alert-red/10", tagline: "Fair, transparent dispute resolution" },
   { id: "ai", label: "AI Integration", icon: Bot, color: "text-foreground", bg: "bg-surface-2", tagline: "Intelligence woven into every feature" },
   { id: "enterprise", label: "Enterprise", icon: Building2, color: "text-foreground", bg: "bg-surface-2", tagline: "Vetted talent for your business" },
+  { id: "events", label: "Events", icon: Trophy, color: "text-court-blue", bg: "bg-court-blue/10", tagline: "Compete, connect, and level up" },
+  { id: "clips", label: "Clips", icon: Play, color: "text-skill-green", bg: "bg-skill-green/10", tagline: "Short-form content showcase" },
+  { id: "analytics-dash", label: "Analytics", icon: BarChart3, color: "text-foreground", bg: "bg-surface-2", tagline: "Track your growth in detail" },
 ];
 
 interface FeatureItem {
