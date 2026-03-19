@@ -386,6 +386,18 @@ const DiscoverPage = () => {
     })();
   }, []);
 
+  // Fetch events
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("events")
+        .select("id, title, description, event_date, event_type, category, spots, spots_filled, icon, prize, is_featured, tags, status")
+        .order("event_date", { ascending: true });
+      if (data) setEvents(data as DiscoverEvent[]);
+      setLoadingEvents(false);
+    })();
+  }, []);
+
   // Tier counts
   const tierCounts = useMemo(() => {
     const c: Record<string, number> = {};
