@@ -147,8 +147,8 @@ export function useLiveAnalytics(): AnalyticsData {
       const profiles = profRes.data || [];
       setProfileStats({
         total: profiles.length,
-        avgSP: profiles.length ? Math.round(profiles.reduce((a: number, p: any) => a + (p.skill_points || 0), 0) / profiles.length) : 0,
-        avgElo: profiles.length ? Math.round(profiles.reduce((a: number, p: any) => a + (p.elo_rating || 0), 0) / profiles.length) : 0,
+        avgSP: profiles.length ? Math.round(profiles.reduce((a: number, p: any) => a + (p.sp || 0), 0) / profiles.length) : 0,
+        avgElo: profiles.length ? Math.round(profiles.reduce((a: number, p: any) => a + (p.elo || 0), 0) / profiles.length) : 0,
       });
 
       // Listing stats
