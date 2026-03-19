@@ -187,9 +187,9 @@ const MarketplacePreviewSection = () => {
           className="mb-8 flex flex-wrap justify-center gap-4 sm:gap-8"
         >
           {[
-            { label: "Active Gigs", value: `${gigs.length}+` },
-            { label: "Online Now", value: "1.2K" },
-            { label: "Avg Response", value: "< 5min" },
+            { label: "Active Gigs", value: liveStats.activeGigs > 0 ? `${liveStats.activeGigs}+` : "250+" },
+            { label: "Online Now", value: liveStats.onlineNow > 0 ? (liveStats.onlineNow >= 1000 ? `${(liveStats.onlineNow / 1000).toFixed(1)}K` : `${liveStats.onlineNow}`) : "1.2K" },
+            { label: "Avg Response", value: liveStats.avgResponse },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="font-heading text-xl font-bold text-foreground">{stat.value}</p>
