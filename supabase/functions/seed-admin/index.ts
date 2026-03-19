@@ -20,8 +20,8 @@ Deno.serve(async (req) => {
     const password = "Admin123!";
     let adminUserId: string;
 
-    const { data: existingUsers } = await supabase.auth.admin.listUsers();
-    const existing = existingUsers?.users?.find((u: any) => u.email === email);
+    const { data: existingUsers } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    const allUsers = existingUsers?.users || [];
 
     if (existing) {
       adminUserId = existing.id;
