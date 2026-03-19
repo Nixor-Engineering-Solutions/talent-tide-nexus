@@ -708,7 +708,7 @@ const DiscoverPage = () => {
                 {/* Results bar */}
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-[11px] text-muted-foreground">
-                    <span className="font-mono font-bold text-foreground">{resultCount}</span> {isPeople ? "creator" : "guild"}{resultCount !== 1 ? "s" : ""} found
+                    <span className="font-mono font-bold text-foreground">{resultCount}</span> {isPeople ? "creator" : isGuilds ? "guild" : "event"}{resultCount !== 1 ? "s" : ""} found
                   </p>
                   {hasActiveFilters && (
                     <button onClick={clearAllFilters} className="text-[10px] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
@@ -722,8 +722,8 @@ const DiscoverPage = () => {
                     <CardSkeleton count={isPeople ? 9 : 6} />
                   ) : resultCount === 0 ? (
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-24 text-center">
-                      {isPeople ? <Users size={40} className="mx-auto mb-3 text-muted-foreground/20" /> : <Shield size={40} className="mx-auto mb-3 text-muted-foreground/20" />}
-                      <p className="text-sm text-foreground font-medium">No {isPeople ? "creators" : "guilds"} found</p>
+                      {isPeople ? <Users size={40} className="mx-auto mb-3 text-muted-foreground/20" /> : isGuilds ? <Shield size={40} className="mx-auto mb-3 text-muted-foreground/20" /> : <Calendar size={40} className="mx-auto mb-3 text-muted-foreground/20" />}
+                      <p className="text-sm text-foreground font-medium">No {isPeople ? "creators" : isGuilds ? "guilds" : "events"} found</p>
                       <p className="text-xs text-muted-foreground mt-1">Try adjusting your filters or search terms</p>
                       {hasActiveFilters && (
                         <button onClick={clearAllFilters} className="mt-3 text-xs text-foreground underline underline-offset-4">Clear all filters</button>
@@ -733,9 +733,51 @@ const DiscoverPage = () => {
                     <motion.div key="people" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                       {filteredUsers.map((user, i) => <UserCard key={user.user_id} user={user} index={i} />)}
                     </motion.div>
-                  ) : (
+                  ) : isGuilds ? (
                     <motion.div key="guilds" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-4 sm:grid-cols-2">
                       {filteredGuilds.map((guild, i) => <GuildCard key={guild.id} guild={guild} index={i} />)}
+                    </motion.div>
+                  ) : (
+                    <motion.div key="events" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                      {filteredEvents.map((event, i) => (
+                        <motion.div
+                          key={event.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.03, duration: 0.3 }}
+                        >
+                          <Link to="/events" className="block group">
+                            <div className="rounded-2xl border border-border bg-card overflow-hidden transition-all duration-300 hover:border-foreground/20 hover:shadow-[0_0_30px_-10px_hsl(var(--foreground)/0.1)]">
+                              <div className={cn("h-1 w-full", event.event_type === "Tournament" ? "bg-badge-gold" : event.event_type === "Workshop" ? "bg-court-blue" : "bg-skill-green")} />
+                              <div className="p-5">
+                                <div className="flex items-start justify-between mb-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xl">{event.icon}</span>
+                                    <div>
+                                      <h3 className="font-heading text-sm font-bold text-foreground group-hover:text-foreground/80 transition-colors">{event.title}</h3>
+                                      <span className="text-[10px] text-muted-foreground">{event.event_type} · {event.category}</span>
+                                    </div>
+                                  </div>
+                                  {event.is_featured && <Star size={12} className="text-badge-gold fill-badge-gold" />}
+                                </div>
+                                <p className="text-[11px] text-muted-foreground line-clamp-2 mb-3">{event.description}</p>
+                                <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                                  <span className="flex items-center gap-1"><Calendar size={10} /> {new Date(event.event_date).toLocaleDateString()}</span>
+                                  {event.spots && <span className="flex items-center gap-1"><Users size={10} /> {event.spots_filled}/{event.spots}</span>}
+                                  {event.prize && <span className="flex items-center gap-1 text-badge-gold font-medium"><Trophy size={10} /> {event.prize}</span>}
+                                </div>
+                                {event.tags && event.tags.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-3">
+                                    {event.tags.slice(0, 3).map(t => (
+                                      <span key={t} className="rounded-md bg-surface-2 px-2 py-0.5 text-[9px] font-medium text-muted-foreground border border-border/50">{t}</span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        </motion.div>
+                      ))}
                     </motion.div>
                   )}
                 </AnimatePresence>
