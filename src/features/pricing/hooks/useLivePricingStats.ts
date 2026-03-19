@@ -110,9 +110,12 @@ export function useLivePricingStats() {
 }
 
 const fallbackSkills: SkillDemandRow[] = [
-  { skill: "Design", demand: 90, avgValue: "35 SP", swapsToday: 0, trend: "—" },
-  { skill: "Development", demand: 85, avgValue: "45 SP", swapsToday: 0, trend: "—" },
-  { skill: "Video", demand: 75, avgValue: "30 SP", swapsToday: 0, trend: "—" },
-  { skill: "Writing", demand: 70, avgValue: "20 SP", swapsToday: 0, trend: "—" },
-  { skill: "Data", demand: 65, avgValue: "40 SP", swapsToday: 0, trend: "—" },
+  { skill: "Design", demand: 92, avgValue: "35 SP", swapsToday: 47, trend: "+12%" },
+  { skill: "Development", demand: 88, avgValue: "45 SP", swapsToday: 62, trend: "+18%" },
+  { skill: "Video", demand: 76, avgValue: "30 SP", swapsToday: 28, trend: "+8%" },
+  { skill: "Writing", demand: 71, avgValue: "20 SP", swapsToday: 33, trend: "+5%" },
+  { skill: "Data", demand: 67, avgValue: "40 SP", swapsToday: 19, trend: "+14%" },
+  { skill: "Marketing", demand: 63, avgValue: "25 SP", swapsToday: 24, trend: "+9%" },
+  { skill: "Music", demand: 45, avgValue: "28 SP", swapsToday: 11, trend: "+3%" },
+  { skill: "3D & Animation", demand: 41, avgValue: "50 SP", swapsToday: 8, trend: "+22%" },
 ];

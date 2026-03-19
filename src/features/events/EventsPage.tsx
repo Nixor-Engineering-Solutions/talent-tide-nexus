@@ -241,25 +241,37 @@ const EventsPage = () => {
               </div>
             </motion.div>
 
-            {/* Right: Spline 3D Embed */}
+            {/* Right: Styled Event Illustration */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
+              className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden border border-border bg-gradient-to-br from-surface-1 to-surface-2"
             >
-              <iframe
-                src="https://my.spline.design/eventticketanimation-e3d7f9a2b1c4d5e6f7a8b9c0d1e2f3a4/"
-                frameBorder="0"
-                width="100%"
-                height="100%"
-                className="rounded-2xl"
-                style={{ border: "none" }}
-                title="Events 3D Scene"
-                loading="lazy"
-              />
-              {/* Fallback overlay in case Spline doesn't load */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl border border-border" />
+              {/* Decorative elements */}
+              <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)', backgroundSize: '28px 28px' }} />
+              <motion.div className="absolute top-1/4 right-1/4 w-48 h-48 rounded-full bg-court-blue/10 blur-3xl" animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 5, repeat: Infinity }} />
+              <motion.div className="absolute bottom-1/3 left-1/4 w-40 h-40 rounded-full bg-skill-green/8 blur-3xl" animate={{ scale: [1.2, 1, 1.2] }} transition={{ duration: 4, repeat: Infinity }} />
+              <motion.div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full bg-badge-gold/5 blur-3xl" animate={{ scale: [1, 1.4, 1] }} transition={{ duration: 6, repeat: Infinity }} />
+              
+              <div className="relative z-10 flex flex-col items-center justify-center h-full p-8 text-center space-y-6">
+                <motion.div animate={{ y: [-8, 8, -8] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}>
+                  <div className="w-20 h-20 rounded-2xl bg-foreground/5 border border-border flex items-center justify-center backdrop-blur-sm mx-auto">
+                    <Trophy size={36} className="text-foreground/60" />
+                  </div>
+                </motion.div>
+                <div>
+                  <p className="font-heading text-xl font-bold text-foreground/80">Compete & Connect</p>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-[220px]">Tournaments, meetups, and workshops — all in one place</p>
+                </div>
+                <div className="flex gap-2">
+                  {["Tournament", "Meetup", "Workshop"].map((tag, i) => (
+                    <motion.span key={tag} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 + i * 0.1 }} className="rounded-lg bg-card/80 border border-border px-3 py-1.5 text-[10px] font-mono text-muted-foreground backdrop-blur-sm">
+                      {tag}
+                    </motion.span>
+                  ))}
+                </div>
+              </div>
             </motion.div>
           </div>
         </section>
