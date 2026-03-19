@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   HelpCircle, ChevronDown, Search, Coins, ArrowLeftRight, Users, Shield,
   Trophy, Scale, Bot, Building2, Zap, MessageSquare, GraduationCap,
-  Star, Target, Flame, FolderKanban, Lock, FileText, ChevronLeft, ChevronRight
+  Star, Target, Flame, FolderKanban, Lock, FileText, ChevronLeft, ChevronRight,
+  Video
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
