@@ -2,10 +2,11 @@ import { useRef, useEffect, useState } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { ArrowRight, Sparkles, Zap, Users, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { smartStat } from "@/hooks/useSmartStats";
 
 const headlineWords = ["Trade", "Skills.", "Build", "Together."];
 
-const fallbackStats = { swaps: 10000, universities: 50, points: 2000000 };
+const demoStats = { swaps: 10000, universities: 50, points: 2000000 };
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
