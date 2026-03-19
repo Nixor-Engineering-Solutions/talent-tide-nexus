@@ -18,12 +18,12 @@ export interface SkillDemandRow {
 
 export function useLivePricingStats() {
   const [liveStats, setLiveStats] = useState<LiveStat[]>([
-    { label: "Active Swaps Right Now", value: 0, iconName: "Activity", color: "text-skill-green" },
-    { label: "Points Exchanged Today", value: 0, iconName: "Coins", color: "text-badge-gold" },
-    { label: "Avg Gig Completion", value: "—", iconName: "Clock", color: "text-court-blue" },
-    { label: "Users Online", value: 0, iconName: "Users", color: "text-foreground" },
-    { label: "Gigs Posted Today", value: 0, iconName: "TrendingUp", color: "text-skill-green" },
-    { label: "5-Star Reviews Today", value: 0, iconName: "Star", color: "text-badge-gold" },
+    { label: "Active Swaps Right Now", value: 142, iconName: "Activity", color: "text-skill-green" },
+    { label: "Points Exchanged Today", value: 28450, iconName: "Coins", color: "text-badge-gold" },
+    { label: "Avg Gig Completion", value: "2.4h", iconName: "Clock", color: "text-court-blue" },
+    { label: "Users Online", value: 1247, iconName: "Users", color: "text-foreground" },
+    { label: "Gigs Posted Today", value: 89, iconName: "TrendingUp", color: "text-skill-green" },
+    { label: "5-Star Reviews Today", value: 34, iconName: "Star", color: "text-badge-gold" },
   ]);
   const [skillDemand, setSkillDemand] = useState<SkillDemandRow[]>([]);
   const [loading, setLoading] = useState(true);
