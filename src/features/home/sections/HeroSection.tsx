@@ -2,17 +2,18 @@ import { useRef, useEffect, useState } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { ArrowRight, Sparkles, Zap, Users, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { smartStat } from "@/hooks/useSmartStats";
 
 const headlineWords = ["Trade", "Skills.", "Build", "Together."];
 
-const fallbackStats = { swaps: 10000, universities: 50, points: 2000000 };
+const demoStats = { swaps: 10000, universities: 50, points: 2000000 };
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const spotlightX = useMotionValue(0);
   const spotlightY = useMotionValue(0);
   const [spotlightOpacity, setSpotlightOpacity] = useState(0);
-  const [stats, setStats] = useState(fallbackStats);
+  const [stats, setStats] = useState(demoStats);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -21,13 +22,13 @@ const HeroSection = () => {
         supabase.from("profiles").select("university").not("university", "is", null),
         supabase.from("escrow_contracts").select("total_sp"),
       ]);
-      const swaps = (listingsRes.count || 0);
+      const swaps = listingsRes.count || 0;
       const unis = new Set((profilesRes.data || []).map((p: any) => p.university)).size;
       const points = (escrowRes.data || []).reduce((a: number, e: any) => a + (e.total_sp || 0), 0);
       setStats({
-        swaps: swaps > 0 ? swaps : fallbackStats.swaps,
-        universities: unis > 0 ? unis : fallbackStats.universities,
-        points: points > 0 ? points : fallbackStats.points,
+        swaps: smartStat(swaps, demoStats.swaps),
+        universities: smartStat(unis, demoStats.universities),
+        points: smartStat(points, demoStats.points),
       });
     };
     fetchStats();

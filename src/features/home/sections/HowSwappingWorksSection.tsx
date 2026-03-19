@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserPlus, Search, Handshake, MessageSquare, CheckCircle2, Star, TrendingUp, Users, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { smartStat, smartStatStr } from "@/hooks/useSmartStats";
 
 const steps = [
   { icon: UserPlus, title: "Sign Up & Get Rewarded", desc: "Create your account, take the guided tour, and earn your first 100 Skill Points for completing it.", color: "text-skill-green", accent: "bg-skill-green/10 border-skill-green/20" },
@@ -31,9 +32,9 @@ const HowSwappingWorksSection = () => {
       const avgH = avgSec > 0 ? `${(avgSec / 3600).toFixed(1)}h` : fallbackBarStats.avgCompletion;
 
       setBarStats({
-        totalSwaps: swaps > 0 ? swaps : fallbackBarStats.totalSwaps,
-        totalUsers: users > 0 ? users : fallbackBarStats.totalUsers,
-        avgCompletion: avgH,
+        totalSwaps: smartStat(swaps, fallbackBarStats.totalSwaps),
+        totalUsers: smartStat(users, fallbackBarStats.totalUsers),
+        avgCompletion: smartStatStr(avgH, fallbackBarStats.avgCompletion),
       });
     };
     load();

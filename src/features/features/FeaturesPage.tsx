@@ -25,6 +25,9 @@ const featureCategories = [
   { id: "court", label: "Skill Court", icon: Scale, color: "text-alert-red", bg: "bg-alert-red/10", tagline: "Fair, transparent dispute resolution" },
   { id: "ai", label: "AI Integration", icon: Bot, color: "text-foreground", bg: "bg-surface-2", tagline: "Intelligence woven into every feature" },
   { id: "enterprise", label: "Enterprise", icon: Building2, color: "text-foreground", bg: "bg-surface-2", tagline: "Vetted talent for your business" },
+  { id: "events", label: "Events", icon: Trophy, color: "text-court-blue", bg: "bg-court-blue/10", tagline: "Compete, connect, and level up" },
+  { id: "clips", label: "Clips", icon: Play, color: "text-skill-green", bg: "bg-skill-green/10", tagline: "Short-form content showcase" },
+  { id: "analytics-dash", label: "Analytics", icon: BarChart3, color: "text-foreground", bg: "bg-surface-2", tagline: "Track your growth in detail" },
 ];
 
 interface FeatureItem {
@@ -469,6 +472,103 @@ const featureMap: Record<string, FeatureSection> = {
       },
     ],
     bottomCTA: { text: "Request a demo", link: "/enterprise" },
+  },
+  events: {
+    hero: {
+      title: "Events & Tournaments",
+      subtitle: "Compete in skill challenges, attend workshops, join meetups, and participate in Guild Wars — there's always something happening on SkillSwappr.",
+      stat: [
+        { value: "340+", label: "Events hosted" },
+        { value: "48K+", label: "Participants" },
+        { value: "1.2M SP", label: "Prizes awarded" },
+      ],
+    },
+    features: [
+      {
+        icon: Trophy, title: "Competitive Tournaments", desc: "Bracket-style competitions across design, development, writing, and more. Earn SP prizes and exclusive badges.", highlight: true,
+        details: ["Multiple formats: solo, duo, team", "ELO-based matchmaking for fair competition", "Live leaderboards during events", "Seasonal championships with premium rewards"],
+        metrics: [{ label: "Avg participants", value: "256" }, { label: "Prize pools", value: "50K SP" }],
+      },
+      {
+        icon: Swords, title: "Guild Wars", desc: "Weekly guild-vs-guild competitions. Strategy, teamwork, and collective skill determine the champion.",
+        details: ["5-round elimination format", "Metrics: completion rate, quality, activity", "Treasury bonuses for winning guilds", "Season-long standings and playoffs"],
+      },
+      {
+        icon: Globe, title: "In-Person Meetups", desc: "Local events in London, NYC, Berlin, Toronto, Singapore, and Tokyo. Network, swap skills, and get exclusive swag.",
+        details: ["Monthly events in 6+ cities", "Lightning talks and demos", "Exclusive merchandise for attendees", "Community-organized satellite events"],
+      },
+      {
+        icon: Lightbulb, title: "Workshops & AMAs", desc: "Hands-on learning sessions and Ask Me Anything events with founders, top swappers, and industry experts.",
+        details: ["Live coding and design sessions", "Q&A with platform founders", "Skill-building bootcamps", "Recording available for 30 days"],
+      },
+      {
+        icon: Award, title: "Event Rewards", desc: "Earn exclusive badges, SP prizes, ELO boosts, and featured profile placement through event participation.",
+        details: ["Event-specific achievement badges", "SP prizes for top performers", "ELO multiplier for tournament wins", "Homepage feature for champions"],
+      },
+    ],
+    bottomCTA: { text: "View Events Calendar", link: "/events" },
+  },
+  clips: {
+    hero: {
+      title: "Clips",
+      subtitle: "Short-form content that showcases your skills and builds your brand on the platform.",
+      stat: [
+        { value: "15–60s", label: "Clip length" },
+        { value: "6", label: "Pinned to profile" },
+        { value: "SP", label: "Earned via engagement" },
+      ],
+    },
+    features: [
+      {
+        icon: Play, title: "Visual Portfolio Feed", desc: "Showcase your work through short videos and images. Timelapses, before/afters, tutorials, and process breakdowns.", highlight: true,
+        details: ["15–60 second video clips", "Image carousels with captions", "Auto-generated thumbnails", "Category tagging for discoverability"],
+        metrics: [{ label: "Avg views", value: "1.2K" }, { label: "Engagement", value: "+34%" }],
+      },
+      {
+        icon: Heart, title: "Engagement Rewards", desc: "Earn SP through likes, shares, and saves on your clips. Popular clips get boosted visibility.",
+        details: ["SP earned per engagement milestone", "Trending clips featured on Discover page", "Weekly top clips showcase", "Share clips to external platforms"],
+      },
+      {
+        icon: Star, title: "Profile Pinning", desc: "Pin up to 6 clips to your profile's portfolio section for maximum visibility to potential collaborators.",
+        details: ["Drag-and-drop pin ordering", "Clips appear alongside portfolio items", "Analytics per pinned clip", "Seasonal pin themes"],
+      },
+      {
+        icon: Sparkles, title: "AI Enhancement", desc: "AI suggests optimal posting times, generates captions, and recommends trending formats for maximum reach.",
+        details: ["Best time to post recommendations", "Auto-generated captions and tags", "Trending format suggestions", "Performance prediction before posting"],
+      },
+    ],
+    bottomCTA: { text: "Start Creating Clips", link: "/clips" },
+  },
+  "analytics-dash": {
+    hero: {
+      title: "Analytics Dashboard",
+      subtitle: "Deep insights into your performance, growth, and marketplace position with real-time data visualization.",
+      stat: [
+        { value: "Real-time", label: "Data updates" },
+        { value: "12+", label: "Metric types" },
+        { value: "Custom", label: "Date ranges" },
+      ],
+    },
+    features: [
+      {
+        icon: BarChart3, title: "Performance Overview", desc: "Track gigs completed, SP earned, rating trends, and ELO progression over time.", highlight: true,
+        details: ["Interactive time-series charts", "Custom date range selection", "Comparison with platform averages", "Export data as CSV"],
+        metrics: [{ label: "Metrics tracked", value: "12+" }, { label: "Update frequency", value: "Real-time" }],
+      },
+      {
+        icon: TrendingUp, title: "Growth Tracking", desc: "Monitor your skill progression, tier advancement, and marketplace ranking over time.",
+        details: ["Skill-by-skill progression charts", "Tier advancement timeline", "Ranking position history", "Growth velocity indicators"],
+      },
+      {
+        icon: Target, title: "Goal Setting", desc: "Set personal targets for gigs, SP, and ELO. Track progress with visual indicators and milestone alerts.",
+        details: ["Custom goal creation", "Progress bars and percentages", "Email alerts on milestone completion", "Streak and consistency tracking"],
+      },
+      {
+        icon: Gauge, title: "Market Position", desc: "See where you rank in your skill categories, how your pricing compares, and which skills are trending.",
+        details: ["Category-specific rankings", "Price benchmarking tool", "Demand trend analysis", "Competitor comparison (anonymized)"],
+      },
+    ],
+    bottomCTA: { text: "View Your Analytics", link: "/analytics" },
   },
 };
 
