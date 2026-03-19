@@ -646,7 +646,6 @@ const DiscoverPage = () => {
                 transition={{ delay: 0.2 }}
                 className="hidden lg:block w-56 shrink-0 sticky top-24 self-start max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide"
               >
-              >
                 <div className="rounded-2xl border border-border bg-card p-4">
                   <FilterPanel />
                 </div>
