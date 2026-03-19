@@ -407,7 +407,7 @@ const LeaderboardPage = () => {
                               <span className="flex items-center gap-1"><Flame size={10} className="text-badge-gold" />{user.streak}d streak</span>
                               <span>{user.points.toLocaleString()} SP</span>
                             </div>
-                          </motion.div>
+                          </motion.div></Link>
                         ))}
                       </div>
 
