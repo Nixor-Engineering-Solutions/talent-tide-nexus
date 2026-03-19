@@ -5,6 +5,7 @@ import {
   Search, Users, Shield, Briefcase, GraduationCap, Trophy, Coins,
   TrendingUp, Swords, Sparkles, Star, Eye, ChevronDown, ChevronRight,
   MapPin, Zap, Crown, Target, ArrowUpDown, X, SlidersHorizontal,
+  Calendar,
 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import CustomCursor from "@/components/shared/CustomCursor";
