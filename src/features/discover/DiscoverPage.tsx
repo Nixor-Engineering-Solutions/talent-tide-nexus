@@ -45,10 +45,28 @@ interface Guild {
   member_count?: number;
 }
 
+interface DiscoverEvent {
+  id: string;
+  title: string;
+  description: string;
+  event_date: string;
+  event_type: string;
+  category: string;
+  spots: number | null;
+  spots_filled: number;
+  icon: string;
+  prize: string | null;
+  is_featured: boolean;
+  tags: string[] | null;
+  status: string;
+}
+
 /* ─── Constants ─── */
 const TABS = [
   { key: "people", label: "People", icon: Users },
   { key: "guilds", label: "Guilds", icon: Shield },
+  { key: "events", label: "Events", icon: Calendar },
+  { key: "tournaments", label: "Tournaments", icon: Trophy },
 ] as const;
 
 const TIERS = ["Diamond", "Platinum", "Gold", "Silver", "Bronze"];
