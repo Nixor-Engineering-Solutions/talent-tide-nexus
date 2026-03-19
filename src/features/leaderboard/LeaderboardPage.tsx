@@ -428,7 +428,7 @@ const LeaderboardPage = () => {
                               <Star size={12} className="fill-badge-gold text-badge-gold" />
                               <span className="font-mono text-xs text-badge-gold">{user.rating}</span>
                             </div>
-                          </motion.div>
+                          </motion.div></Link>
                         ))}
                       </div>
                     </>
