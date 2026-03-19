@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserPlus, Search, Handshake, MessageSquare, CheckCircle2, Star, TrendingUp, Users, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { smartStat, smartStatStr } from "@/hooks/useSmartStats";
 
 const steps = [
   { icon: UserPlus, title: "Sign Up & Get Rewarded", desc: "Create your account, take the guided tour, and earn your first 100 Skill Points for completing it.", color: "text-skill-green", accent: "bg-skill-green/10 border-skill-green/20" },
