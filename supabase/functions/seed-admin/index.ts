@@ -18,6 +18,7 @@ Deno.serve(async (req) => {
     });
 
     // 1. Create admin user
+    let adminId: string;
     const { data: userData, error: userError } = await supabase.auth.admin.createUser({
       email: "Admin123@skillswaprr.com",
       password: "Admin123!",
@@ -25,18 +26,17 @@ Deno.serve(async (req) => {
       user_metadata: { full_name: "SkillSwappr Admin" }
     });
 
-    if (userError && !userError.message?.includes("already been registered")) {
-      throw userError;
-    }
-
-    // Get user id
-    let adminId: string;
     if (userData?.user?.id) {
       adminId = userData.user.id;
     } else {
-      const { data: existingUsers } = await supabase.auth.admin.listUsers();
-      const admin = existingUsers?.users?.find((u: any) => u.email === "Admin123@skillswaprr.com");
-      if (!admin) throw new Error("Could not find admin user");
+      // User might already exist
+      const { data: listData } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      const admin = listData?.users?.find((u: any) => u.email === "admin123@skillswaprr.com");
+      if (!admin) {
+        return new Response(JSON.stringify({ error: `Create error: ${userError?.message}, listUsers found ${listData?.users?.length || 0} users` }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       adminId = admin.id;
     }
 
