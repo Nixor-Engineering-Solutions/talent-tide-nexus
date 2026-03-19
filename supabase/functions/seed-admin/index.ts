@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
 
     const testUserIds: Record<string, string> = {};
     for (const tu of testUsers) {
-      const existingTestUser = existingUsers?.users?.find((u: any) => u.email === tu.email);
+      const existingTestUser = allUsers.find((u: any) => u.email === tu.email);
       let uid: string;
       if (existingTestUser) {
         uid = existingTestUser.id;
