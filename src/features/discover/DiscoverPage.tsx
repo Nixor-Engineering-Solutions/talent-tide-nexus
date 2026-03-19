@@ -310,7 +310,7 @@ const GuildCard = ({ guild, index }: { guild: Guild; index: number }) => (
 /* ─── Main Page ─── */
 const DiscoverPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = (searchParams.get("tab") as "people" | "guilds") || "people";
+  const activeTab = (searchParams.get("tab") as "people" | "guilds" | "events" | "tournaments") || "people";
   const isMobile = useIsMobile();
 
   const [search, setSearch] = useState("");
