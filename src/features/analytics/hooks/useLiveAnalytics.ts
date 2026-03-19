@@ -78,7 +78,7 @@ export function useLiveAnalytics(): AnalyticsData {
         supabase.from("error_log").select("*").order("created_at", { ascending: false }).limit(200),
         supabase.from("activity_log").select("*").order("created_at", { ascending: false }).limit(50),
         supabase.from("guilds").select("id, total_sp, avg_elo, total_gigs"),
-        supabase.from("profiles").select("user_id, skill_points, elo_rating"),
+        supabase.from("profiles").select("user_id, sp, elo"),
         supabase.from("listings").select("id, rating, hot, status"),
         supabase.from("disputes").select("id, status"),
         supabase.from("enterprise_projects").select("id, status, budget"),
