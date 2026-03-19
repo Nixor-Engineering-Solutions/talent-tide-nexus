@@ -521,15 +521,16 @@ const DiscoverPage = () => {
           </div>
 
           <div className="mx-auto max-w-7xl px-6 relative z-10">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-              <div className="flex items-center gap-3 mb-3">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
+              <div className="flex items-center justify-center gap-3 mb-3">
                 <div className="h-px flex-1 max-w-[40px] bg-foreground/20" />
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Explore the network</span>
+                <div className="h-px flex-1 max-w-[40px] bg-foreground/20" />
               </div>
               <h1 className="font-heading text-5xl font-black text-foreground sm:text-6xl tracking-tight">
                 Discover
               </h1>
-              <p className="mt-3 text-sm text-muted-foreground max-w-md">
+              <p className="mt-3 text-sm text-muted-foreground max-w-md mx-auto">
                 Find skilled creators, join powerful guilds, and build your network across the platform.
               </p>
             </motion.div>
