@@ -72,10 +72,10 @@ Deno.serve(async (req) => {
 
     const testUserIds: Record<string, string> = {};
     for (const tu of testUsers) {
-      const existingTestUser = allUsers.find((u: any) => u.email === tu.email);
+      const { data: existingTestProfile } = await supabase.from("profiles").select("user_id").eq("email", tu.email).maybeSingle();
       let uid: string;
-      if (existingTestUser) {
-        uid = existingTestUser.id;
+      if (existingTestProfile) {
+        uid = existingTestProfile.user_id;
       } else {
         const { data: newU, error } = await supabase.auth.admin.createUser({
           email: tu.email, password: "TestUser123!",
