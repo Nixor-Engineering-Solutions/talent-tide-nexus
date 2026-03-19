@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Users, Zap, Trophy, GraduationCap, Shield, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { smartStat } from "@/hooks/useSmartStats";
 
 const useCountUp = (end: number, duration = 2000) => {
   const [count, setCount] = useState(0);
