@@ -587,7 +587,7 @@ const DiscoverPage = () => {
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder={isPeople ? "Search by name, skill, or university..." : "Search guilds by name or slogan..."}
+                  placeholder={isPeople ? "Search by name, skill, or university..." : isGuilds ? "Search guilds by name or slogan..." : "Search events by name, tag, or description..."}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="h-12 w-full rounded-xl border border-border bg-card pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-foreground/30 focus:outline-none transition-colors"
