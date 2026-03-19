@@ -37,6 +37,7 @@ const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPag
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
 const EventsPage = lazy(() => import("./features/events/EventsPage"));
+const EventDetailPage = lazy(() => import("./features/events/EventDetailPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/DashboardPage"));
 const WorkspacePage = lazy(() => import("./features/workspace/WorkspacePage"));
 const ProfilePage = lazy(() => import("./features/profile/ProfilePage"));
