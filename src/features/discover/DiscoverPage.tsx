@@ -460,9 +460,19 @@ const DiscoverPage = () => {
       });
   }, [guilds, selectedGuildCategories, onlyPublic, search, guildSort]);
 
+  // Filtered events
+  const filteredEvents = useMemo(() => {
+    const isTournament = activeTab === "tournaments";
+    return events
+      .filter(e => isTournament ? e.event_type === "Tournament" : true)
+      .filter(e => !search || e.title.toLowerCase().includes(search.toLowerCase()) || e.description.toLowerCase().includes(search.toLowerCase()) || e.tags?.some(t => t.toLowerCase().includes(search.toLowerCase())));
+  }, [events, activeTab, search]);
+
   const isPeople = activeTab === "people";
-  const resultCount = isPeople ? filteredUsers.length : filteredGuilds.length;
-  const loading = isPeople ? loadingUsers : loadingGuilds;
+  const isGuilds = activeTab === "guilds";
+  const isEvents = activeTab === "events" || activeTab === "tournaments";
+  const resultCount = isPeople ? filteredUsers.length : isGuilds ? filteredGuilds.length : filteredEvents.length;
+  const loading = isPeople ? loadingUsers : isGuilds ? loadingGuilds : loadingEvents;
   const sorts = isPeople ? USER_SORTS : GUILD_SORTS;
   const activeSort = isPeople ? userSort : guildSort;
   const setSort = isPeople ? setUserSort : setGuildSort;
