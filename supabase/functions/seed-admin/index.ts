@@ -20,26 +20,18 @@ Deno.serve(async (req) => {
     const password = "Admin123!";
     let adminUserId: string;
 
-    const { data: existingUsers } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-    const allUsers = existingUsers?.users || [];
-    const existing = allUsers.find((u: any) => u.email === email);
-
-    if (existing) {
-      adminUserId = existing.id;
+    // Look up admin by email in profiles first
+    const { data: existingProfile } = await supabase.from("profiles").select("user_id").eq("email", email).maybeSingle();
+    
+    if (existingProfile) {
+      adminUserId = existingProfile.user_id;
     } else {
       const { data: newUser, error: authError } = await supabase.auth.admin.createUser({
         email, password, email_confirm: true,
         user_metadata: { full_name: "SkillSwappr Admin" },
       });
-      if (authError) {
-        // If user exists but wasn't found in list, look them up
-        const { data: lookupUsers } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-        const found = lookupUsers?.users?.find((u: any) => u.email === email);
-        if (found) { adminUserId = found.id; }
-        else throw authError;
-      } else {
-        adminUserId = newUser.user.id;
-      }
+      if (authError) throw authError;
+      adminUserId = newUser.user.id;
     }
 
     // 2. Upsert admin profile
