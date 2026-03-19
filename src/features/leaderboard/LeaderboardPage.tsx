@@ -414,7 +414,7 @@ const LeaderboardPage = () => {
                       {/* Rank List */}
                       <div className="space-y-2">
                         {displayProfiles.slice(3).map((user, i) => (
-                          <motion.div key={user.rank} initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.04 }} className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:border-foreground/20 hover:bg-card/80">
+                          <Link to={`/profile/${user.user_id}`} key={user.rank}><motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.04 }} className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:border-foreground/20 hover:bg-card/80">
                             {rankIcon(user.rank)}
                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-surface-2 font-mono text-xs font-bold text-foreground">{user.avatar}</div>
                             <div className="flex-1 min-w-0">
