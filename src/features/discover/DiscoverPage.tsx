@@ -332,6 +332,10 @@ const DiscoverPage = () => {
   const [guildSort, setGuildSort] = useState("rank");
   const [onlyPublic, setOnlyPublic] = useState(false);
 
+  // Events state
+  const [events, setEvents] = useState<DiscoverEvent[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+
   const setTab = (tab: string) => {
     setSearchParams({ tab });
     setSearch("");
