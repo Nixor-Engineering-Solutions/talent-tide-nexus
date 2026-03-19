@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Trophy, Crown, Medal, Star, TrendingUp, Users, Shield, GraduationCap,
@@ -391,7 +392,7 @@ const LeaderboardPage = () => {
                       {/* Top 3 Podium */}
                       <div className="mb-12 grid gap-4 md:grid-cols-3">
                         {displayProfiles.slice(0, 3).map((user, i) => (
-                          <motion.div key={user.rank} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12, type: "spring" }} className={`rounded-2xl border p-8 text-center transition-all hover:shadow-lg ${i === 0 ? `${tierBg(user.tier)} md:order-2 md:-mt-6` : i === 1 ? "border-muted-foreground/20 bg-card md:order-1" : "border-border bg-card md:order-3"}`}>
+                          <Link to={`/profile/${user.user_id}`} key={user.rank}><motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12, type: "spring" }} className={`rounded-2xl border p-8 text-center transition-all hover:shadow-lg cursor-pointer ${i === 0 ? `${tierBg(user.tier)} md:order-2 md:-mt-6` : i === 1 ? "border-muted-foreground/20 bg-card md:order-1" : "border-border bg-card md:order-3"}`}>
                             <div className="mb-2">{rankIcon(user.rank)}</div>
                             <div className={`mx-auto my-3 flex h-20 w-20 items-center justify-center rounded-full font-heading text-xl font-bold text-foreground ${i === 0 ? "bg-badge-gold/10 ring-2 ring-badge-gold/30" : "bg-surface-2"}`}>{user.avatar}</div>
                             <h3 className="font-heading text-lg font-bold text-foreground">{user.name}</h3>
@@ -406,14 +407,14 @@ const LeaderboardPage = () => {
                               <span className="flex items-center gap-1"><Flame size={10} className="text-badge-gold" />{user.streak}d streak</span>
                               <span>{user.points.toLocaleString()} SP</span>
                             </div>
-                          </motion.div>
+                          </motion.div></Link>
                         ))}
                       </div>
 
                       {/* Rank List */}
                       <div className="space-y-2">
                         {displayProfiles.slice(3).map((user, i) => (
-                          <motion.div key={user.rank} initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.04 }} className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:border-foreground/20 hover:bg-card/80">
+                          <Link to={`/profile/${user.user_id}`} key={user.rank}><motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.04 }} className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:border-foreground/20 hover:bg-card/80">
                             {rankIcon(user.rank)}
                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-surface-2 font-mono text-xs font-bold text-foreground">{user.avatar}</div>
                             <div className="flex-1 min-w-0">
@@ -427,7 +428,7 @@ const LeaderboardPage = () => {
                               <Star size={12} className="fill-badge-gold text-badge-gold" />
                               <span className="font-mono text-xs text-badge-gold">{user.rating}</span>
                             </div>
-                          </motion.div>
+                          </motion.div></Link>
                         ))}
                       </div>
                     </>

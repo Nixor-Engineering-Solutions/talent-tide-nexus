@@ -37,6 +37,7 @@ const LeaderboardPage = lazy(() => import("./features/leaderboard/LeaderboardPag
 const TransactionLookupPage = lazy(() => import("./features/transaction/TransactionLookupPage"));
 const FAQPage = lazy(() => import("./features/faq/FAQPage"));
 const EventsPage = lazy(() => import("./features/events/EventsPage"));
+const EventDetailPage = lazy(() => import("./features/events/EventDetailPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/DashboardPage"));
 const WorkspacePage = lazy(() => import("./features/workspace/WorkspacePage"));
 const ProfilePage = lazy(() => import("./features/profile/ProfilePage"));
@@ -97,6 +98,7 @@ const AnimatedRoutes = () => {
           <Route path="/transaction" element={<TransactionLookupPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/events" element={<EventsPage />} />
+          <Route path="/events/:eventId" element={<EventDetailPage />} />
           <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
           <Route path="/workspace/:id" element={<RequireAuth><WorkspacePage /></RequireAuth>} />
           <Route path="/profile/:userId" element={<ProfilePage />} />
