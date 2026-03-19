@@ -617,10 +617,6 @@ const DiscoverPage = () => {
                     )}>
                       {key === "people" ? users.length : key === "guilds" ? guilds.length : key === "events" ? events.length : events.filter(e => e.event_type === "Tournament").length}
                     </span>
-                      activeTab === key ? "bg-background/20 text-background" : "bg-surface-2 text-muted-foreground"
-                    )}>
-                      {key === "people" ? users.length : guilds.length}
-                    </span>
                   </button>
                 ))}
               </div>
