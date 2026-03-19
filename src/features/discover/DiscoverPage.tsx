@@ -674,6 +674,7 @@ const DiscoverPage = () => {
                   </div>
                 </div>
               </motion.aside>
+              )}
 
               {/* Mobile Filters Drawer */}
               <AnimatePresence>
