@@ -4,6 +4,7 @@ import { Star, TrendingUp, Palette, Code, PenTool, Video, BarChart3, ArrowRight,
 import useEmblaCarousel from "embla-carousel-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { smartStat } from "@/hooks/useSmartStats";
 
 const categories = [
   { label: "Design", icon: Palette },
