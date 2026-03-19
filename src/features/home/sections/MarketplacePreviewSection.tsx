@@ -116,8 +116,8 @@ const MarketplacePreviewSection = () => {
       const activeCount = listingsRes.data?.length || 0;
 
       setLiveStats({
-        activeGigs: activeCount > 0 ? activeCount : fallbackGigs.length,
-        onlineNow: onlineCount > 0 ? onlineCount : 1200,
+        activeGigs: smartStat(activeCount, 250),
+        onlineNow: smartStat(onlineCount, 1200),
         avgResponse: "< 5min",
       });
 

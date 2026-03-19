@@ -53,17 +53,14 @@ const CommunityStatsSection = () => {
       const resolvedDisputes = (disputesRes.data || []).filter((d: any) => d.status === "Resolved").length;
       const universities = new Set((profilesRes.data || []).map((p: any) => p.university).filter(Boolean)).size;
 
-      // Only override if we have real data
-      if (userCount > 0 || gigCount > 0) {
-        setStats([
-          { label: "Active Users", value: userCount || fallbackStats[0].value, suffix: "+", icon: Users, color: "text-foreground" },
-          { label: "Gigs Completed", value: gigCount || fallbackStats[1].value, suffix: "+", icon: Zap, color: "text-skill-green" },
-          { label: "Points Exchanged", value: totalSP || fallbackStats[2].value, suffix: "+", icon: TrendingUp, color: "text-badge-gold" },
-          { label: "Guilds Formed", value: guildCount || fallbackStats[3].value, suffix: "+", icon: Trophy, color: "text-court-blue" },
-          { label: "Disputes Resolved", value: resolvedDisputes || fallbackStats[4].value, suffix: "", icon: Shield, color: "text-foreground" },
-          { label: "Universities", value: universities || fallbackStats[5].value, suffix: "", icon: GraduationCap, color: "text-foreground" },
-        ]);
-      }
+      setStats([
+        { label: "Active Users", value: smartStat(userCount, fallbackStats[0].value), suffix: "+", icon: Users, color: "text-foreground" },
+        { label: "Gigs Completed", value: smartStat(gigCount, fallbackStats[1].value), suffix: "+", icon: Zap, color: "text-skill-green" },
+        { label: "Points Exchanged", value: smartStat(totalSP, fallbackStats[2].value), suffix: "+", icon: TrendingUp, color: "text-badge-gold" },
+        { label: "Guilds Formed", value: smartStat(guildCount, fallbackStats[3].value), suffix: "+", icon: Trophy, color: "text-court-blue" },
+        { label: "Disputes Resolved", value: smartStat(resolvedDisputes, fallbackStats[4].value), suffix: "", icon: Shield, color: "text-foreground" },
+        { label: "Universities", value: smartStat(universities, fallbackStats[5].value), suffix: "", icon: GraduationCap, color: "text-foreground" },
+      ]);
     };
     load();
   }, []);

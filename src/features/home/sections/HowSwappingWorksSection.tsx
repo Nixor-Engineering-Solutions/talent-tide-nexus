@@ -32,9 +32,9 @@ const HowSwappingWorksSection = () => {
       const avgH = avgSec > 0 ? `${(avgSec / 3600).toFixed(1)}h` : fallbackBarStats.avgCompletion;
 
       setBarStats({
-        totalSwaps: swaps > 0 ? swaps : fallbackBarStats.totalSwaps,
-        totalUsers: users > 0 ? users : fallbackBarStats.totalUsers,
-        avgCompletion: avgH,
+        totalSwaps: smartStat(swaps, fallbackBarStats.totalSwaps),
+        totalUsers: smartStat(users, fallbackBarStats.totalUsers),
+        avgCompletion: smartStatStr(avgH, fallbackBarStats.avgCompletion),
       });
     };
     load();
