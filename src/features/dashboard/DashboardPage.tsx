@@ -262,26 +262,27 @@ const OverviewTab = ({ profile }: { profile: any }) => {
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MY GIGS TAB
+   MY GIGS TAB — with proposal management
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const MyGigsTab = () => {
   const { user } = useAuth();
   const [filter, setFilter] = useState("all");
   const [realGigs, setRealGigs] = useState<any[]>([]);
+  const [proposals, setProposals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [acceptingId, setAcceptingId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
       setLoading(true);
-      const { data } = await supabase
-        .from("listings")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-      setRealGigs((data || []).map((l: any) => ({
+      const [gigsRes, proposalsRes] = await Promise.all([
+        supabase.from("listings").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("proposals").select("*, listings(title, format, points)").eq("receiver_id", user.id).eq("status", "pending").order("created_at", { ascending: false }),
+      ]);
+      setRealGigs((gigsRes.data || []).map((l: any) => ({
         id: l.id,
         title: l.title,
         status: l.status === "active" ? "active" : l.status === "completed" ? "completed" : "pending",
@@ -292,15 +293,151 @@ const MyGigsTab = () => {
         format: l.format || "Direct Swap",
         deadline: null,
       })));
+      // Enrich proposals with sender profile
+      const props = proposalsRes.data || [];
+      if (props.length > 0) {
+        const senderIds = [...new Set(props.map((p: any) => p.sender_id))];
+        const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, avatar_emoji, elo").in("user_id", senderIds);
+        const profileMap: Record<string, any> = {};
+        profiles?.forEach((p: any) => { profileMap[p.user_id] = p; });
+        setProposals(props.map((p: any) => ({ ...p, senderProfile: profileMap[p.sender_id] || null })));
+      } else {
+        setProposals([]);
+      }
       setLoading(false);
     };
     load();
   }, [user]);
 
+  const handleAcceptProposal = async (proposal: any) => {
+    if (!user) return;
+    setAcceptingId(proposal.id);
+    try {
+      const workspaceId = crypto.randomUUID();
+      const listing = proposal.listings;
+      const totalSp = proposal.offered_sp || listing?.points || 100;
+
+      // 1. Create workspace
+      await supabase.from("workspaces").insert({
+        id: workspaceId,
+        title: listing?.title || "Workspace",
+        workspace_type: (listing?.format || "Direct Swap").toLowerCase().replace(/\s+/g, "_"),
+        listing_id: proposal.listing_id,
+        created_by: user.id,
+      });
+
+      // 2. Create escrow
+      await supabase.from("escrow_contracts").insert({
+        workspace_id: workspaceId,
+        buyer_id: proposal.sender_id,
+        seller_id: user.id,
+        total_sp: totalSp,
+        status: "active",
+      });
+
+      // 3. Create default stages
+      const stages = [
+        { workspace_id: workspaceId, name: "Requirements", order_index: 0, sp_allocated: Math.round(totalSp * 0.2), status: "active" },
+        { workspace_id: workspaceId, name: "Work", order_index: 1, sp_allocated: Math.round(totalSp * 0.5), status: "pending" },
+        { workspace_id: workspaceId, name: "Delivery", order_index: 2, sp_allocated: Math.round(totalSp * 0.3), status: "pending" },
+      ];
+      await supabase.from("workspace_stages").insert(stages);
+
+      // 4. Add both users as members
+      await supabase.from("workspace_members").insert([
+        { workspace_id: workspaceId, user_id: user.id, role: "owner", status: "active" },
+        { workspace_id: workspaceId, user_id: proposal.sender_id, role: "owner", status: "active" },
+      ]);
+
+      // 5. Update proposal
+      await supabase.from("proposals").update({
+        status: "accepted",
+        accepted_at: new Date().toISOString(),
+        workspace_id: workspaceId,
+      }).eq("id", proposal.id);
+
+      // 6. Notify proposer
+      await supabase.from("notifications").insert({
+        user_id: proposal.sender_id,
+        title: "Proposal Accepted! 🎉",
+        message: `Your proposal for "${listing?.title}" was accepted. Workspace is ready!`,
+        type: "proposal",
+        link: `/workspace/${workspaceId}`,
+      });
+
+      toast.success("Proposal accepted! Workspace created.");
+      navigate(`/workspace/${workspaceId}`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to accept proposal");
+    }
+    setAcceptingId(null);
+  };
+
+  const handleDeclineProposal = async (proposalId: string) => {
+    await supabase.from("proposals").update({ status: "rejected", rejected_at: new Date().toISOString() }).eq("id", proposalId);
+    setProposals(prev => prev.filter(p => p.id !== proposalId));
+    toast.success("Proposal declined");
+  };
+
   const filteredGigs = filter === "all" ? realGigs : realGigs.filter(g => g.status === filter);
 
   return (
     <div className="space-y-6">
+      {/* Incoming Proposals */}
+      {proposals.length > 0 && (
+        <div className="rounded-2xl border border-badge-gold/20 bg-badge-gold/5 p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Send size={16} className="text-badge-gold" />
+            <h3 className="font-heading text-lg font-bold text-foreground">Incoming Proposals</h3>
+            <Badge className="bg-badge-gold/10 text-badge-gold border-none ml-auto">{proposals.length} pending</Badge>
+          </div>
+          <div className="space-y-3">
+            {proposals.map((p) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-xl border border-border bg-card p-4"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-2 font-mono text-sm font-bold text-foreground">
+                      {p.senderProfile?.avatar_emoji || p.senderProfile?.display_name?.[0] || "?"}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{p.senderProfile?.display_name || "User"}</p>
+                      <p className="text-[10px] text-muted-foreground">ELO {p.senderProfile?.elo || "N/A"} · for "{p.listings?.title || "Gig"}"</p>
+                    </div>
+                  </div>
+                  {p.offered_sp > 0 && (
+                    <span className="rounded-full bg-skill-green/10 border border-skill-green/20 px-2.5 py-1 text-xs font-mono text-skill-green">
+                      +{p.offered_sp} SP
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">{p.message}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleAcceptProposal(p)}
+                    disabled={acceptingId === p.id}
+                    className="flex-1 rounded-xl bg-skill-green py-2.5 text-sm font-semibold text-background flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  >
+                    <CheckCircle2 size={14} /> {acceptingId === p.id ? "Creating Workspace..." : "Accept"}
+                  </button>
+                  <button
+                    onClick={() => handleDeclineProposal(p.id)}
+                    className="flex-1 rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <XCircle size={14} /> Decline
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-2xl font-bold text-foreground">My Gigs</h2>
         <div className="flex gap-2">
