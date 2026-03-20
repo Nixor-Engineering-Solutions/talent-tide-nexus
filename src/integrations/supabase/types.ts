@@ -3251,6 +3251,45 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_consultations: {
+        Row: {
+          consultant_id: string | null
+          created_at: string
+          description: string
+          id: string
+          requested_by: string
+          required_skills: string[] | null
+          sp_offered: number
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          consultant_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          requested_by: string
+          required_skills?: string[] | null
+          sp_offered?: number
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          consultant_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          requested_by?: string
+          required_skills?: string[] | null
+          sp_offered?: number
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
       workspace_deliverables: {
         Row: {
           ai_feedback: string | null
