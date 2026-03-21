@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { logActivity } from "@/lib/activity-logger";
 import { callAI } from "../hooks/useWorkspaceAI";
+import { useEffect } from "react";
 import type { Escrow, WorkspaceRole, WsDispute } from "../types";
-import { useState as useS, useEffect } from "react";
 
 interface Props {
   workspaceId: string;
