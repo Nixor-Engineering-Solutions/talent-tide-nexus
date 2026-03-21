@@ -1,176 +1,149 @@
 
 
-# Plan: Full Workspace System + Flow + Spline Embeds + Events Backend
+# Plan: Workspace Redesign From Scratch
 
-This is a massive undertaking covering workspace functionality, platform flow, Spline embeds, and events backend. Given the scope, this will span **multiple implementation messages** (4-5).
+## Current State
 
----
-
-## Current State Assessment
-
-**What exists:**
-- Workspace page with 11 panels: Chat (real-time), Whiteboard (basic canvas), Video (mock), Files (working uploads), Stages (working), Escrow (display), Submit (with AI review), Dispute (with AI help), Members (invite/roles), AI Assistant (streaming), Settings
-- Proposals can be sent from marketplace but **no acceptance flow** — proposals don't create workspaces
-- No workspace creation automation
-- Whiteboard is a basic HTML5 canvas with pen/eraser only
-- No consultation, revisions, timeline, or metrics tabs
-- Events page uses hardcoded data, no backend for Register/RSVP/Remind
-
-**What's missing for the full flow:**
-1. Proposal acceptance → auto-create workspace + escrow + stages + members
-2. Whiteboard upgrade (tldraw-style with boards, kanban, pins)
-3. Consultation tab, Revisions tab, Timeline tab, Metrics tab
-4. Events backend (Register Now, Remind Me, RSVP)
-5. Spline embeds on hero + events
+The workspace is a 1390-line monolith with 11 panels in a single file. The sidebar is a 14px icon strip. The whiteboard is a basic HTML5 canvas with pen/eraser only. Roles are limited to `owner | editor | viewer`. Escrow, Stages, and Timeline are separate panels. No consultation integration in members. AI assistant is a single chat tab. Settings are minimal. Deliverable acceptance has no role-based approval flow.
 
 ---
 
-## Implementation Phases
+## Architecture: Split Into Modular Files
 
-### Phase 1: Spline Embeds + Proposal→Workspace Flow (Message 1)
-
-**1a. Spline Embed — Landing Hero**
-- The hero already has a Spline iframe: `https://my.spline.design/nexbotrobotcharacterconcept-...`
-- Verify it's rendering. If not, check the URL. The current code looks correct.
-
-**1b. Spline Embed — Events Hero**
-- Currently shows a fallback illustration (Trophy icon + decorative divs)
-- Replace with a real Spline embed similar to the hero section
-- Use: `https://my.spline.design/nexbotrobotcharacterconcept-1d5c831dc4fdd14e0f11e1217b1b5843/` (same as hero — reuse the working embed, since fabricated URLs won't work)
-
-**1c. Proposal Acceptance → Workspace Creation Flow**
-- In `DashboardPage.tsx` "My Gigs" tab, add a proposals section showing incoming proposals
-- Add Accept/Decline buttons on proposals
-- On Accept:
-  1. Update proposal status to "accepted"
-  2. Create `workspaces` row (id=uuid, title from listing, workspace_type based on format, listing_id, created_by)
-  3. Create `escrow_contracts` row (buyer=proposer, seller=listing owner, total_sp from proposal)
-  4. Create default `workspace_stages` (3 stages: Requirements, Work, Delivery)
-  5. Create `workspace_members` (both users as owner)
-  6. Link proposal to workspace via `workspace_id`
-  7. Create notification for proposer
-  8. Navigate to workspace
-
-**1d. Events Backend Wiring**
-- Wire "Register Now" button on EventsPage to insert into `event_registrations`
-- Wire "Remind Me" button similarly with status="reminded"
-- Show registration state (already registered / register / full)
-- Events hero: add working Spline embed
-
-### Phase 2: Workspace Enhancement — New Tabs (Message 2)
-
-Add 5 new panels to the workspace sidebar:
-
-**2a. Consultation Tab**
-- Request external consultants from guilds or platform
-- Form: description, SP offered, required skills
-- Lists active consultation requests
-- Backend: new `workspace_consultations` table or use workspace_members with role="consultant"
-
-**2b. Revisions Tab**
-- Shows revision history for each deliverable
-- Accept/Request Revision buttons for workspace owner
-- Revision counter (max 3 by default)
-- Links to deliverables with status tracking
-
-**2c. Timeline Tab**
-- Visual timeline of workspace activity (Gantt-style or vertical)
-- Pulls from stages, deliverables, messages timestamps
-- Shows milestones, deadlines, progress
-
-**2d. Metrics & Reporting Tab**
-- Workspace analytics: messages sent, files uploaded, time spent, stage velocity
-- Charts using existing data
-- Export report functionality
-
-**2e. Reporting Tab (within Settings)**
-- Report workspace partner for misconduct
-- Links to dispute system
-
-### Phase 3: Whiteboard Upgrade (Message 3)
-
-Replace basic canvas with a rich collaborative board:
-
-**Option A: tldraw integration**
-- Install `tldraw` package
-- Embed tldraw editor in whiteboard panel
-- Provides: drawing, shapes, text, sticky notes, connectors, frames, image paste
-- Supports: zoom, pan, selection, multi-tool
-- Data persistence: save tldraw document JSON to `workspace_files` as a special entry
-
-**Option B: Custom rich board (if tldraw is too heavy)**
-- Keep canvas but add:
-  - Sticky notes (draggable, colorable, text editable)
-  - Image placement (drag from files)
-  - Kanban columns overlay
-  - Pin/bookmark items
-  - Pinterest-style idea boards
-  - Export as image
-
-**Recommendation**: Use tldraw — it's the most feature-rich option and aligns with "figma boards + pinterest" request. It handles telemetry/interaction tracking natively.
-
-### Phase 4: Full Flow Verification + Polish (Message 4)
-
-- Test: Signup → Create gig → Receive proposal → Accept → Workspace opens → Chat → Upload files → Submit deliverable (AI review) → Complete stages → Release escrow → Transaction generated → Clips auto-created → Analytics updated
-- Fix any broken links in the chain
-- Ensure SP transfer is recorded
-- Ensure transaction appears in transaction lookup
-
----
-
-## Database Changes Needed
-
-**New table: `workspace_consultations`**
-```
-id, workspace_id, requested_by, description, sp_offered, 
-required_skills, status (open/accepted/completed), 
-consultant_id, created_at
+```text
+src/features/workspace/
+├── WorkspacePage.tsx          ← Shell: header + sidebar + panel router
+├── types.ts                   ← All workspace types
+├── hooks/
+│   ├── useWorkspaceData.ts    ← Fetch escrow, stages, members, role
+│   └── useWorkspaceAI.ts      ← AI helper calls
+├── panels/
+│   ├── ChatPanel.tsx
+│   ├── WhiteboardPanel.tsx    ← Rich board (issues, flowcharts, freehand, sprints, cards)
+│   ├── VideoPanel.tsx
+│   ├── FilesPanel.tsx
+│   ├── ProgressPanel.tsx      ← MERGED: Stages + Escrow + Timeline
+│   ├── SubmitPanel.tsx        ← Deliverable submission
+│   ├── RevisionsPanel.tsx     ← Revision history + accept/reject
+│   ├── MetricsPanel.tsx       ← Workspace analytics
+│   ├── MembersPanel.tsx       ← Roles: owner, client, consultant, editor, viewer + invite by link
+│   ├── DisputePanel.tsx
+│   ├── AIPanel.tsx            ← Sub-tabs: Chat, Code, Images, Video, Audio
+│   └── SettingsPanel.tsx      ← Expanded settings
+└── components/
+    ├── WorkspaceHeader.tsx
+    ├── WorkspaceSidebar.tsx
+    └── WhiteboardToolbar.tsx
 ```
 
-**Table modifications:**
-- `event_registrations`: Ensure RLS allows authenticated users to insert their own registrations
-- `proposals`: Ensure `workspace_id` column exists (it does per types.ts)
+---
 
-**No new tables needed for:**
-- Revisions (use existing `workspace_deliverables` with revision_count)
-- Timeline (computed from existing data)
-- Metrics (computed from existing data)
+## Key Changes
+
+### 1. Merged Progress Panel (Stages + Escrow + Timeline)
+
+Single "Progress" panel with 3 sub-views toggled by horizontal pills:
+- **Stages**: Current stage cards with complete/lock/active states. New stages: `dispute`, `abandoned`, `revision`, `consultation`, `on_hold` (added via migration to allow any status string)
+- **Escrow**: SP breakdown per stage, insurance, release status
+- **Timeline**: Vertical activity log pulling from stages, messages, files, deliverables — chronological view of all workspace events
+
+### 2. Enhanced Members Panel with Consultation
+
+**New roles** (DB migration to extend `workspace_role` enum): `owner`, `client`, `consultant`, `editor`, `viewer`
+
+- **Invite by email** (existing) + **Invite by link** (generate shareable link with role + expiry stored in `workspace_invites` table)
+- **Consultation flow**: Owner or Client can invite a consultant. Consultant receives notification and can accept/decline (like gig proposals). Recorded who invited whom
+- Role badges with distinct colors: Owner=gold, Client=green, Consultant=blue, Editor=silver, Viewer=muted
+- Role permissions matrix enforced in each panel
+
+### 3. Deliverable Approval Flow
+
+- Deliverables require acceptance by **Client** OR **Consultant** (not the submitter)
+- Accept/Reject/Request Revision buttons shown only to Client and Consultant roles
+- Approval recorded with `approved_by` field (migration to add column to `workspace_deliverables`)
+- Revision requests increment `revision_count` and require re-submission
+
+### 4. Rich Whiteboard
+
+Custom-built rich canvas (not tldraw — avoids heavy dependency):
+- **Tools**: Select, Freehand draw, Rectangle, Circle, Line, Text, Arrow/Connector, Sticky note, Issue card, Sprint card
+- **Features**: Infinite canvas with pan/zoom, color picker, layers, undo/redo stack, grid snap
+- **Cards**: Draggable issue cards (title, assignee, priority, status), sprint cards (name, dates, items), flowchart connectors
+- **Persistence**: Save canvas state as JSON to `workspace_files` with type `whiteboard_state`
+- **Style**: Dark canvas (#0A0A0A) with subtle dot grid, cards use surface-1/2 colors
+
+### 5. AI Panel with Sub-Tabs
+
+Replace single chat with tabbed AI interface:
+- **Chat**: General assistant (existing, refined)
+- **Code**: Code generation/review with syntax highlighting
+- **Images**: Image generation prompts + gallery
+- **Video**: Video analysis/summary tools
+- **Audio**: Transcription, voice-to-text tools
+- **More**: Plagiarism check, audit trail, advice engine
+
+Each sub-tab has its own UI but shares the same AI backend with different `action` parameters.
+
+### 6. Expanded Settings
+
+Add sections:
+- **Workspace Preferences**: Theme, density, auto-save interval
+- **Notification Rules**: Per-event toggle (messages, files, stages, disputes)
+- **Access Control**: Default role for new members, link sharing toggle
+- **Danger Zone**: Archive, transfer ownership, delete workspace
+- **Report**: Report partner for misconduct (moved from separate panel)
+- **Export**: Export workspace data as ZIP (messages, files, deliverables)
+
+### 7. Visual Redesign
+
+**Header**: Full-width with workspace title (editable), status badge, SP amount, member avatars stack, quick-action buttons (video call, AI, settings)
+
+**Sidebar**: Wider (56px→64px) with icon + label on hover/expanded state. Grouped with subtle section headers. Active indicator is a left accent bar + background highlight. Badge dots for unread counts on Chat, Notifications
+
+**Panel transitions**: Framer Motion slide + fade. Each panel has a distinctive header bar with icon + title + contextual actions
+
+**Cards**: `rounded-2xl border border-border bg-card` with hover lift effect. Stats in JetBrains Mono. Color pops only for status indicators
 
 ---
 
-## Files to Create/Modify
+## Database Migrations
 
-**Create:**
-- `src/features/workspace/panels/ConsultationPanel.tsx`
+1. **Extend `workspace_role` enum**: Add `client` and `consultant` values
+2. **Add `approved_by` column to `workspace_deliverables`**: UUID nullable, tracks who approved
+3. **Add `approved_at` column to `workspace_deliverables`**: Timestamp nullable
+4. **Create `workspace_invites` table**: `id, workspace_id, role, token, created_by, expires_at, used_by, used_at, created_at`
+5. **Add new stage statuses**: No schema change needed — `status` is already a text column
+
+---
+
+## Files Created (15+)
+
+- `src/features/workspace/types.ts`
+- `src/features/workspace/hooks/useWorkspaceData.ts`
+- `src/features/workspace/hooks/useWorkspaceAI.ts`
+- `src/features/workspace/components/WorkspaceHeader.tsx`
+- `src/features/workspace/components/WorkspaceSidebar.tsx`
+- `src/features/workspace/panels/ChatPanel.tsx`
+- `src/features/workspace/panels/WhiteboardPanel.tsx`
+- `src/features/workspace/panels/VideoPanel.tsx`
+- `src/features/workspace/panels/FilesPanel.tsx`
+- `src/features/workspace/panels/ProgressPanel.tsx`
+- `src/features/workspace/panels/SubmitPanel.tsx`
 - `src/features/workspace/panels/RevisionsPanel.tsx`
-- `src/features/workspace/panels/TimelinePanel.tsx`
 - `src/features/workspace/panels/MetricsPanel.tsx`
+- `src/features/workspace/panels/MembersPanel.tsx`
+- `src/features/workspace/panels/DisputePanel.tsx`
+- `src/features/workspace/panels/AIPanel.tsx`
+- `src/features/workspace/panels/SettingsPanel.tsx`
 
-**Heavy Rewrites:**
-- `src/features/workspace/WorkspacePage.tsx` — add new panels to sidebar, integrate tldraw, expand whiteboard
-- `src/features/dashboard/DashboardPage.tsx` — add proposal management (accept/decline), workspace creation flow
-- `src/features/events/EventsPage.tsx` — wire Register/Remind buttons to backend, add Spline embed
+## Files Rewritten
 
-**Modify:**
-- `src/features/marketplace/components/ProposalModal.tsx` — fix proposal field names (proposer_id→sender_id, seller_id→receiver_id per schema)
-
----
+- `src/features/workspace/WorkspacePage.tsx` — reduced to ~150 lines (shell only)
 
 ## Implementation Order
 
-1. **Message 1**: Spline embeds (hero verified, events added), proposal acceptance flow with workspace auto-creation, events Register/Remind backend wiring
-2. **Message 2**: New workspace panels (Consultation, Revisions, Timeline, Metrics), sidebar expansion
-3. **Message 3**: Whiteboard upgrade with tldraw, kanban boards, persistence
-4. **Message 4**: Full flow testing, SP transfer completion, clips auto-generation, polish
-
----
-
-## Design Standards (from STYLE-GUIDE.md)
-
-- All new panels: `bg-background`, `border-border`, `text-foreground` / `text-muted-foreground`
-- Cards: `rounded-2xl border border-border bg-card p-5`
-- Buttons: `rounded-xl bg-foreground text-background` (primary), `border border-border text-muted-foreground` (secondary)
-- Mono for stats/numbers, Framer Motion for all transitions
-- No shared layouts between panels — each gets unique design
-- Color pops: green for SP/success, red for disputes/alerts, gold for badges, blue for court/info
+1. **Message 1**: DB migrations + types + hooks + shell + sidebar + header + ProgressPanel (merged) + MembersPanel (new roles, invite link, consultation)
+2. **Message 2**: ChatPanel + FilesPanel + SubmitPanel + RevisionsPanel (approval flow) + DisputePanel
+3. **Message 3**: WhiteboardPanel (rich canvas with cards, flowcharts, persistence) + VideoPanel
+4. **Message 4**: AIPanel (sub-tabs) + MetricsPanel + SettingsPanel (expanded) + polish
 
