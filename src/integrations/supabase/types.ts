@@ -3294,6 +3294,8 @@ export type Database = {
         Row: {
           ai_feedback: string | null
           ai_quality_score: number | null
+          approved_at: string | null
+          approved_by: string | null
           created_at: string
           description: string
           file_urls: Json | null
@@ -3311,6 +3313,8 @@ export type Database = {
         Insert: {
           ai_feedback?: string | null
           ai_quality_score?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           description?: string
           file_urls?: Json | null
@@ -3328,6 +3332,8 @@ export type Database = {
         Update: {
           ai_feedback?: string | null
           ai_quality_score?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           description?: string
           file_urls?: Json | null
@@ -3432,6 +3438,42 @@ export type Database = {
           tags?: string[] | null
           uploaded_by?: string
           version?: number
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      workspace_invites: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          role: Database["public"]["Enums"]["workspace_role"]
+          token: string
+          used_at: string | null
+          used_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["workspace_role"]
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["workspace_role"]
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
           workspace_id?: string
         }
         Relationships: []
@@ -3665,7 +3707,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "enterprise"
-      workspace_role: "owner" | "editor" | "viewer"
+      workspace_role: "owner" | "editor" | "viewer" | "client" | "consultant"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3794,7 +3836,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "enterprise"],
-      workspace_role: ["owner", "editor", "viewer"],
+      workspace_role: ["owner", "editor", "viewer", "client", "consultant"],
     },
   },
 } as const
