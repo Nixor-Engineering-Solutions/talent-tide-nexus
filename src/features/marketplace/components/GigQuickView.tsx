@@ -377,6 +377,8 @@ const getFormatCTA = (format: string) => {
 /* ─── Main Component ─── */
 const GigQuickView = forwardRef<HTMLDivElement, Props>(({ gig, open, onClose }, ref) => {
   const [reviews, setReviews] = useState<any[]>([]);
+  const gigId = typeof gig?.id === "string" ? gig.id : undefined;
+  const { counts, userState, toggle, share, report } = useGigInteractions(gigId);
 
   useEffect(() => {
     if (!gig?.sellerId) { setReviews([]); return; }
