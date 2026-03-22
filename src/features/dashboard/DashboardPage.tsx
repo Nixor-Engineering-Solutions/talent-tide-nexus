@@ -355,10 +355,10 @@ const MyGigsTab = () => {
       }
       await supabase.from("workspace_stages").insert(stages);
 
-      // 4. Add both users as members
+      // 4. Add both users as members with correct roles
       await supabase.from("workspace_members").insert([
         { workspace_id: workspaceId, user_id: user.id, role: "owner", status: "active" },
-        { workspace_id: workspaceId, user_id: proposal.sender_id, role: "owner", status: "active" },
+        { workspace_id: workspaceId, user_id: proposal.sender_id, role: "client", status: "active" },
       ]);
 
       // 5. Update proposal
