@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Star, Shield, Clock, Eye, ArrowRight, Heart, Share2, Bookmark,
   MessageSquare, Flag, GraduationCap, CheckCircle2, ChevronRight, Gavel, Coins, Layers,
-  GitMerge, Zap, Briefcase, HandHeart, Users, Calendar, AlertTriangle,
+  GitMerge, Zap, Briefcase, HandHeart, Users, Calendar, AlertTriangle, Radio,
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ import UserPreviewPopover from "./UserPreviewPopover";
 import ProposalModal from "./ProposalModal";
 import LoginPrompt from "@/components/shared/LoginPrompt";
 import { useAuth } from "@/lib/auth-context";
+import { useGigInteractions } from "../hooks/useGigInteractions";
 
 const deliveryStages = [
   { stage: "Requirements Review", days: 1 },
@@ -30,6 +31,7 @@ export default function GigDetailPage() {
   const [loading, setLoading] = useState(true);
   const [proposalOpen, setProposalOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const { counts, userState, toggle, share, report } = useGigInteractions(gigId);
 
   useEffect(() => {
     const load = async () => {
@@ -343,14 +345,15 @@ export default function GigDetailPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {[
                   { label: "Delivery", value: `${listing.delivery_days || 7}d`, icon: Clock },
-                  { label: "Views", value: `${listing.views || 0}`, icon: Eye },
-                  { label: "Swaps", value: `${sellerProfile?.total_gigs_completed || 0}`, icon: CheckCircle2 },
+                  { label: "Views", value: `${counts.views || listing.views || 0}`, icon: Eye },
+                  { label: "Likes", value: `${counts.likes}`, icon: Heart },
+                  { label: "Live", value: `${counts.liveViewers}`, icon: Radio },
                 ].map(s => (
                   <div key={s.label} className="rounded-xl bg-surface-1 border border-border p-3 text-center">
-                    <s.icon className="w-3.5 h-3.5 text-muted-foreground mx-auto mb-1" />
+                    <s.icon className={`w-3.5 h-3.5 mx-auto mb-1 ${s.label === "Live" && counts.liveViewers > 0 ? "text-skill-green animate-pulse" : "text-muted-foreground"}`} />
                     <p className="text-sm font-mono font-bold text-foreground">{s.value}</p>
                     <p className="text-[9px] text-muted-foreground uppercase font-mono">{s.label}</p>
                   </div>
@@ -398,19 +401,36 @@ export default function GigDetailPage() {
                   <MessageSquare className="w-3.5 h-3.5" />Message Seller
                 </button>
                 <div className="flex gap-2">
-                  <button className="flex-1 h-9 rounded-lg border border-border text-muted-foreground text-xs hover:text-foreground hover:bg-surface-2 transition-colors flex items-center justify-center gap-1">
-                    <Heart className="w-3.5 h-3.5" />Like
+                  <button
+                    onClick={() => toggle("like")}
+                    className={`flex-1 h-9 rounded-lg border text-xs flex items-center justify-center gap-1 transition-colors ${
+                      userState.liked
+                        ? "border-alert-red/30 bg-alert-red/10 text-alert-red"
+                        : "border-border text-muted-foreground hover:text-foreground hover:bg-surface-2"
+                    }`}
+                  >
+                    <Heart className={`w-3.5 h-3.5 ${userState.liked ? "fill-current" : ""}`} />{counts.likes || "Like"}
                   </button>
-                  <button className="flex-1 h-9 rounded-lg border border-border text-muted-foreground text-xs hover:text-foreground hover:bg-surface-2 transition-colors flex items-center justify-center gap-1">
-                    <Bookmark className="w-3.5 h-3.5" />Save
+                  <button
+                    onClick={() => toggle("save")}
+                    className={`flex-1 h-9 rounded-lg border text-xs flex items-center justify-center gap-1 transition-colors ${
+                      userState.saved
+                        ? "border-badge-gold/30 bg-badge-gold/10 text-badge-gold"
+                        : "border-border text-muted-foreground hover:text-foreground hover:bg-surface-2"
+                    }`}
+                  >
+                    <Bookmark className={`w-3.5 h-3.5 ${userState.saved ? "fill-current" : ""}`} />{counts.saves || "Save"}
                   </button>
-                  <button className="flex-1 h-9 rounded-lg border border-border text-muted-foreground text-xs hover:text-foreground hover:bg-surface-2 transition-colors flex items-center justify-center gap-1">
-                    <Share2 className="w-3.5 h-3.5" />Share
+                  <button
+                    onClick={share}
+                    className="flex-1 h-9 rounded-lg border border-border text-muted-foreground text-xs hover:text-foreground hover:bg-surface-2 transition-colors flex items-center justify-center gap-1"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />{counts.shares || "Share"}
                   </button>
                 </div>
               </div>
 
-              <button className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-alert-red transition-colors">
+              <button onClick={() => report()} className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-alert-red transition-colors">
                 <Flag className="w-3 h-3" />Report this listing
               </button>
             </div>

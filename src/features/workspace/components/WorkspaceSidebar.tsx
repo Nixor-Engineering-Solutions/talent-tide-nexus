@@ -64,11 +64,11 @@ export default function WorkspaceSidebar({ activePanel, onPanelSwitch, workspace
   const sections = getSections(workspaceType);
 
   return (
-    <nav className="w-16 shrink-0 border-r border-border bg-surface-1/50 flex flex-col py-3 overflow-y-auto">
+    <nav className="w-[68px] shrink-0 border-r border-border bg-card/30 backdrop-blur-sm flex flex-col py-2 overflow-y-auto">
       {sections.map((section, si) => (
         <div key={section.label}>
-          {si > 0 && <div className="mx-3 my-2 h-px bg-border/50" />}
-          <p className="px-2 mb-1 text-[8px] font-mono uppercase tracking-[0.15em] text-muted-foreground/40 text-center">
+          {si > 0 && <div className="mx-3 my-1.5 h-px bg-border/40" />}
+          <p className="px-2 mb-0.5 text-[7px] font-mono uppercase tracking-[0.2em] text-muted-foreground/30 text-center select-none">
             {section.label}
           </p>
           {section.items.map((item) => {
@@ -81,28 +81,28 @@ export default function WorkspaceSidebar({ activePanel, onPanelSwitch, workspace
                   logInteraction("workspace_tab_switch", { to: item.id });
                 }}
                 title={item.label}
-                className={`relative flex flex-col items-center justify-center w-full h-12 gap-0.5 transition-all ${
+                className={`relative flex flex-col items-center justify-center w-full h-11 gap-0.5 transition-all ${
                   isActive
                     ? "text-foreground"
-                    : "text-muted-foreground/60 hover:text-foreground"
+                    : "text-muted-foreground/50 hover:text-foreground/80"
                 }`}
               >
                 {isActive && (
                   <motion.div
-                    layoutId="sidebar-indicator"
-                    className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-foreground"
+                    layoutId="ws-sidebar-indicator"
+                    className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r-full bg-foreground"
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
                 {isActive && (
                   <motion.div
-                    layoutId="sidebar-bg"
-                    className="absolute inset-1 rounded-lg bg-foreground/5"
+                    layoutId="ws-sidebar-bg"
+                    className="absolute inset-x-1 inset-y-0.5 rounded-lg bg-foreground/[0.04]"
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
-                <item.icon size={18} className="relative z-10" />
-                <span className="text-[8px] font-medium relative z-10 leading-none">{item.label}</span>
+                <item.icon size={16} className="relative z-10" />
+                <span className="text-[7px] font-medium relative z-10 leading-none tracking-wide">{item.label}</span>
               </button>
             );
           })}

@@ -2032,6 +2032,41 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_interactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_type: string
+          listing_id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          listing_id: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          listing_id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_interactions_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           bid_count: number
@@ -2464,6 +2499,7 @@ export type Database = {
           counter_sp: number | null
           created_at: string
           delivery_days: number
+          escrow_terms: Json | null
           expires_at: string | null
           id: string
           listing_id: string
@@ -2474,6 +2510,7 @@ export type Database = {
           rejected_at: string | null
           requirements: string | null
           sender_id: string
+          stage_config: Json | null
           status: string
           updated_at: string
           workspace_id: string | null
@@ -2486,6 +2523,7 @@ export type Database = {
           counter_sp?: number | null
           created_at?: string
           delivery_days?: number
+          escrow_terms?: Json | null
           expires_at?: string | null
           id?: string
           listing_id: string
@@ -2496,6 +2534,7 @@ export type Database = {
           rejected_at?: string | null
           requirements?: string | null
           sender_id: string
+          stage_config?: Json | null
           status?: string
           updated_at?: string
           workspace_id?: string | null
@@ -2508,6 +2547,7 @@ export type Database = {
           counter_sp?: number | null
           created_at?: string
           delivery_days?: number
+          escrow_terms?: Json | null
           expires_at?: string | null
           id?: string
           listing_id?: string
@@ -2518,6 +2558,7 @@ export type Database = {
           rejected_at?: string | null
           requirements?: string | null
           sender_id?: string
+          stage_config?: Json | null
           status?: string
           updated_at?: string
           workspace_id?: string | null

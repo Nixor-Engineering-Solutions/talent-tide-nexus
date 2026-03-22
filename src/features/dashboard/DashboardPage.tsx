@@ -335,18 +335,30 @@ const MyGigsTab = () => {
         status: "active",
       });
 
-      // 3. Create default stages
-      const stages = [
-        { workspace_id: workspaceId, name: "Requirements", order_index: 0, sp_allocated: Math.round(totalSp * 0.2), status: "active" },
-        { workspace_id: workspaceId, name: "Work", order_index: 1, sp_allocated: Math.round(totalSp * 0.5), status: "pending" },
-        { workspace_id: workspaceId, name: "Delivery", order_index: 2, sp_allocated: Math.round(totalSp * 0.3), status: "pending" },
-      ];
+      // 3. Create stages — use AI-suggested stages from proposal if available
+      const proposalStages = proposal.stage_config;
+      let stages: any[];
+      if (Array.isArray(proposalStages) && proposalStages.length > 0) {
+        stages = proposalStages.map((s: any, i: number) => ({
+          workspace_id: workspaceId,
+          name: s.name || `Stage ${i + 1}`,
+          order_index: i,
+          sp_allocated: s.sp || Math.round(totalSp / proposalStages.length),
+          status: i === 0 ? "active" : "locked",
+        }));
+      } else {
+        stages = [
+          { workspace_id: workspaceId, name: "Requirements", order_index: 0, sp_allocated: Math.round(totalSp * 0.2), status: "active" },
+          { workspace_id: workspaceId, name: "Work", order_index: 1, sp_allocated: Math.round(totalSp * 0.5), status: "locked" },
+          { workspace_id: workspaceId, name: "Delivery", order_index: 2, sp_allocated: Math.round(totalSp * 0.3), status: "locked" },
+        ];
+      }
       await supabase.from("workspace_stages").insert(stages);
 
-      // 4. Add both users as members
+      // 4. Add both users as members with correct roles
       await supabase.from("workspace_members").insert([
         { workspace_id: workspaceId, user_id: user.id, role: "owner", status: "active" },
-        { workspace_id: workspaceId, user_id: proposal.sender_id, role: "owner", status: "active" },
+        { workspace_id: workspaceId, user_id: proposal.sender_id, role: "client", status: "active" },
       ]);
 
       // 5. Update proposal

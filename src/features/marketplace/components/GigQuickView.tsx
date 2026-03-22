@@ -12,6 +12,7 @@ import { type Gig } from "../data/mockData";
 import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
 import GuildPreviewPopover from "./GuildPreviewPopover";
+import { useGigInteractions } from "../hooks/useGigInteractions";
 
 interface Props {
   gig: Gig | null;
@@ -376,6 +377,8 @@ const getFormatCTA = (format: string) => {
 /* ─── Main Component ─── */
 const GigQuickView = forwardRef<HTMLDivElement, Props>(({ gig, open, onClose }, ref) => {
   const [reviews, setReviews] = useState<any[]>([]);
+  const gigId = typeof gig?.id === "string" ? gig.id : undefined;
+  const { counts, userState, toggle, share, report } = useGigInteractions(gigId);
 
   useEffect(() => {
     if (!gig?.sellerId) { setReviews([]); return; }
@@ -579,14 +582,27 @@ const GigQuickView = forwardRef<HTMLDivElement, Props>(({ gig, open, onClose }, 
             {getFormatCTA(gig.format)}
 
             <div className="flex gap-2">
-              <button className="flex-1 h-10 rounded-xl border border-border text-foreground text-xs font-heading font-semibold hover:bg-surface-2 transition-colors flex items-center justify-center gap-1.5">
-                <Heart className="w-3.5 h-3.5" />Like
+              <button
+                onClick={() => toggle("like")}
+                className={`flex-1 h-10 rounded-xl border text-xs font-heading font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                  userState.liked ? "border-alert-red/30 bg-alert-red/10 text-alert-red" : "border-border text-foreground hover:bg-surface-2"
+                }`}
+              >
+                <Heart className={`w-3.5 h-3.5 ${userState.liked ? "fill-current" : ""}`} />{counts.likes || "Like"}
               </button>
-              <button className="flex-1 h-10 rounded-xl border border-border text-foreground text-xs font-heading font-semibold hover:bg-surface-2 transition-colors flex items-center justify-center gap-1.5">
-                <Bookmark className="w-3.5 h-3.5" />Save
+              <button
+                onClick={() => toggle("save")}
+                className={`flex-1 h-10 rounded-xl border text-xs font-heading font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                  userState.saved ? "border-badge-gold/30 bg-badge-gold/10 text-badge-gold" : "border-border text-foreground hover:bg-surface-2"
+                }`}
+              >
+                <Bookmark className={`w-3.5 h-3.5 ${userState.saved ? "fill-current" : ""}`} />{counts.saves || "Save"}
               </button>
-              <button className="flex-1 h-10 rounded-xl border border-border text-foreground text-xs font-heading font-semibold hover:bg-surface-2 transition-colors flex items-center justify-center gap-1.5">
-                <Share2 className="w-3.5 h-3.5" />Share
+              <button
+                onClick={share}
+                className="flex-1 h-10 rounded-xl border border-border text-foreground text-xs font-heading font-semibold hover:bg-surface-2 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Share2 className="w-3.5 h-3.5" />{counts.shares || "Share"}
               </button>
             </div>
 
@@ -597,7 +613,7 @@ const GigQuickView = forwardRef<HTMLDivElement, Props>(({ gig, open, onClose }, 
               View Full Gig Page <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
-            <button className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-alert-red transition-colors">
+            <button onClick={() => report()} className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-alert-red transition-colors">
               <Flag className="w-3 h-3" />Report this listing
             </button>
           </div>
