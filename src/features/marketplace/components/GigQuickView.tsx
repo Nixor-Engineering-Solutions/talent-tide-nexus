@@ -613,7 +613,7 @@ const GigQuickView = forwardRef<HTMLDivElement, Props>(({ gig, open, onClose }, 
               View Full Gig Page <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
-            <button className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-alert-red transition-colors">
+            <button onClick={() => report()} className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground hover:text-alert-red transition-colors">
               <Flag className="w-3 h-3" />Report this listing
             </button>
           </div>
