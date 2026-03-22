@@ -12,6 +12,7 @@ import { type Gig } from "../data/mockData";
 import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
 import GuildPreviewPopover from "./GuildPreviewPopover";
+import { useGigInteractions } from "../hooks/useGigInteractions";
 
 interface Props {
   gig: Gig | null;
