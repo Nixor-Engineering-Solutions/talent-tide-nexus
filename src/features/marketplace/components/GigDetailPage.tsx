@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Star, Shield, Clock, Eye, ArrowRight, Heart, Share2, Bookmark,
   MessageSquare, Flag, GraduationCap, CheckCircle2, ChevronRight, Gavel, Coins, Layers,
-  GitMerge, Zap, Briefcase, HandHeart, Users, Calendar, AlertTriangle,
+  GitMerge, Zap, Briefcase, HandHeart, Users, Calendar, AlertTriangle, Radio,
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ import UserPreviewPopover from "./UserPreviewPopover";
 import ProposalModal from "./ProposalModal";
 import LoginPrompt from "@/components/shared/LoginPrompt";
 import { useAuth } from "@/lib/auth-context";
+import { useGigInteractions } from "../hooks/useGigInteractions";
 
 const deliveryStages = [
   { stage: "Requirements Review", days: 1 },
