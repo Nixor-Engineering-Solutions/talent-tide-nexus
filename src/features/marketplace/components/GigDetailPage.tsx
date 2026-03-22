@@ -345,14 +345,15 @@ export default function GigDetailPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {[
                   { label: "Delivery", value: `${listing.delivery_days || 7}d`, icon: Clock },
-                  { label: "Views", value: `${listing.views || 0}`, icon: Eye },
-                  { label: "Swaps", value: `${sellerProfile?.total_gigs_completed || 0}`, icon: CheckCircle2 },
+                  { label: "Views", value: `${counts.views || listing.views || 0}`, icon: Eye },
+                  { label: "Likes", value: `${counts.likes}`, icon: Heart },
+                  { label: "Live", value: `${counts.liveViewers}`, icon: Radio },
                 ].map(s => (
                   <div key={s.label} className="rounded-xl bg-surface-1 border border-border p-3 text-center">
-                    <s.icon className="w-3.5 h-3.5 text-muted-foreground mx-auto mb-1" />
+                    <s.icon className={`w-3.5 h-3.5 mx-auto mb-1 ${s.label === "Live" && counts.liveViewers > 0 ? "text-skill-green animate-pulse" : "text-muted-foreground"}`} />
                     <p className="text-sm font-mono font-bold text-foreground">{s.value}</p>
                     <p className="text-[9px] text-muted-foreground uppercase font-mono">{s.label}</p>
                   </div>
