@@ -129,6 +129,7 @@ export const modes = [
   { label: "Projects", key: "projects", badge: null },
   { label: "Flash Market", key: "flash", badge: "2.5x" },
   { label: "Requests", key: "requests", badge: null },
+  { label: "Contests", key: "contests", badge: "🏆" },
   { label: "For You", key: "recommended", badge: "AI" },
 ] as const;
 
