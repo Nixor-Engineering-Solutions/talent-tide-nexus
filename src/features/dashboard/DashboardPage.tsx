@@ -54,23 +54,7 @@ const sidebarItems = [
 
 /* Mock data removed — all tabs now use Supabase queries */
 
-const categories = [
-  { label: "Design", icon: Palette },
-  { label: "Development", icon: Code },
-  { label: "Writing", icon: PenTool },
-  { label: "Video", icon: Video },
-  { label: "Music", icon: Music },
-  { label: "Marketing", icon: Megaphone },
-  { label: "Data", icon: BarChart },
-  { label: "AI/ML", icon: Cpu },
-];
-
-const formats = [
-  { id: "direct", label: "Direct Swap", desc: "1:1 skill exchange", icon: ArrowRight },
-  { id: "auction", label: "Auction", desc: "Bid with your skills", icon: Gavel },
-  { id: "cocreation", label: "Co-Creation", desc: "Team collaboration", icon: Layers },
-  { id: "fusion", label: "Skill Fusion", desc: "Multi-skill combo", icon: GitMerge },
-];
+/* Format/category constants moved to CreateGigTab.tsx */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    HELPER FUNCTIONS
