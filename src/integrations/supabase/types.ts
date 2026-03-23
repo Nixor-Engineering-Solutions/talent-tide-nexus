@@ -2069,21 +2069,37 @@ export type Database = {
       }
       listings: {
         Row: {
+          auction_config: Json | null
           bid_count: number
           category: string
+          completed_swaps: number | null
+          conditions: Json | null
+          contest_config: Json | null
           created_at: string
           current_bid: number | null
           delivery_days: number
           description: string
           ends_at: string | null
+          flash_config: Json | null
           format: string
+          fusion_skills: string[] | null
+          gig_faq: Json | null
           hot: boolean
           id: string
+          images: string[] | null
           inquiries: number
+          is_subscription: boolean | null
+          max_revisions: number | null
           points: number
           price: string
           rating: number
+          requirements: string[] | null
+          revision_cost_sp: number | null
+          roles_needed: Json | null
           status: string
+          subscription_interval: string | null
+          tags: string[] | null
+          tiers: Json | null
           title: string
           updated_at: string
           user_id: string
@@ -2091,21 +2107,37 @@ export type Database = {
           wants: string | null
         }
         Insert: {
+          auction_config?: Json | null
           bid_count?: number
           category?: string
+          completed_swaps?: number | null
+          conditions?: Json | null
+          contest_config?: Json | null
           created_at?: string
           current_bid?: number | null
           delivery_days?: number
           description?: string
           ends_at?: string | null
+          flash_config?: Json | null
           format?: string
+          fusion_skills?: string[] | null
+          gig_faq?: Json | null
           hot?: boolean
           id?: string
+          images?: string[] | null
           inquiries?: number
+          is_subscription?: boolean | null
+          max_revisions?: number | null
           points?: number
           price?: string
           rating?: number
+          requirements?: string[] | null
+          revision_cost_sp?: number | null
+          roles_needed?: Json | null
           status?: string
+          subscription_interval?: string | null
+          tags?: string[] | null
+          tiers?: Json | null
           title: string
           updated_at?: string
           user_id: string
@@ -2113,21 +2145,37 @@ export type Database = {
           wants?: string | null
         }
         Update: {
+          auction_config?: Json | null
           bid_count?: number
           category?: string
+          completed_swaps?: number | null
+          conditions?: Json | null
+          contest_config?: Json | null
           created_at?: string
           current_bid?: number | null
           delivery_days?: number
           description?: string
           ends_at?: string | null
+          flash_config?: Json | null
           format?: string
+          fusion_skills?: string[] | null
+          gig_faq?: Json | null
           hot?: boolean
           id?: string
+          images?: string[] | null
           inquiries?: number
+          is_subscription?: boolean | null
+          max_revisions?: number | null
           points?: number
           price?: string
           rating?: number
+          requirements?: string[] | null
+          revision_cost_sp?: number | null
+          roles_needed?: Json | null
           status?: string
+          subscription_interval?: string | null
+          tags?: string[] | null
+          tiers?: Json | null
           title?: string
           updated_at?: string
           user_id?: string

@@ -176,6 +176,7 @@ export function useMarketplaceData() {
     else if (mode === "sp-only") result = result.filter(g => g.format === "SP Only");
     else if (mode === "projects") result = result.filter(g => g.format === "Projects");
     else if (mode === "requests") result = result.filter(g => g.format === "Request");
+    else if (mode === "contests") result = result.filter(g => g.format === "Contest");
     else if (mode === "recommended") result = result.sort((a, b) => b.elo - a.elo);
 
     if (filters.sort === "Newest") result.sort((a, b) => 0);
