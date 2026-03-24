@@ -26,7 +26,11 @@ const WorkspacePage = () => {
   const { isAuthenticated, user } = useAuth();
   const [activePanel, setActivePanel] = useState<Panel>("chat");
   const [transactionCode, setTransactionCode] = useState<string | null>(null);
-  const [preferredLang, setPreferredLang] = useState("en");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Auto-detect browser language for translation
+  const browserLang = navigator.language?.split("-")[0] || "en";
+  const [preferredLang] = useState(browserLang);
 
   const workspaceId = id || "demo-workspace-001";
   const userId = user?.id || null;
@@ -56,7 +60,7 @@ const WorkspacePage = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="h-screen flex flex-col bg-background overflow-hidden">
         <WorkspaceHeader
           workspace={workspace}
           escrow={escrow}
@@ -71,16 +75,18 @@ const WorkspacePage = () => {
             activePanel={activePanel}
             onPanelSwitch={setActivePanel}
             workspaceType={workspace?.workspace_type || "direct_swap"}
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
 
-          <main className="flex-1 overflow-hidden">
+          <main className="flex-1 overflow-hidden bg-background">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activePanel}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.15 }}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.12 }}
                 className="h-full"
               >
                 {activePanel === "chat" && <ChatPanel workspaceId={workspaceId} userId={userId} partnerName={partnerName} preferredLang={preferredLang} />}
@@ -94,7 +100,7 @@ const WorkspacePage = () => {
                 {activePanel === "members" && <MembersPanel workspaceId={workspaceId} userId={userId} userRole={userRole} />}
                 {activePanel === "dispute" && <DisputePanel workspaceId={workspaceId} userId={userId} escrow={escrow} userRole={userRole} />}
                 {activePanel === "ai" && <AIPanel workspaceId={workspaceId} />}
-                {activePanel === "settings" && <SettingsPanel workspaceId={workspaceId} escrow={escrow} partnerName={partnerName} transactionCode={transactionCode} preferredLang={preferredLang} onLangChange={setPreferredLang} userRole={userRole} />}
+                {activePanel === "settings" && <SettingsPanel workspaceId={workspaceId} escrow={escrow} partnerName={partnerName} transactionCode={transactionCode} preferredLang={preferredLang} onLangChange={() => {}} userRole={userRole} />}
               </motion.div>
             </AnimatePresence>
           </main>

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import {
   MessageSquare, Pencil, Video, FileText, Layers, Package,
   Gavel, Users, Bot, Settings, BarChart3, RotateCcw,
-  ListChecks, Clock,
+  ListChecks, Clock, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { logInteraction } from "@/lib/activity-logger";
 import type { Panel } from "../types";
@@ -58,56 +58,78 @@ interface Props {
   activePanel: Panel;
   onPanelSwitch: (p: Panel) => void;
   workspaceType: string;
+  collapsed: boolean;
+  onToggle: () => void;
 }
 
-export default function WorkspaceSidebar({ activePanel, onPanelSwitch, workspaceType }: Props) {
+export default function WorkspaceSidebar({ activePanel, onPanelSwitch, workspaceType, collapsed, onToggle }: Props) {
   const sections = getSections(workspaceType);
 
   return (
-    <nav className="w-[68px] shrink-0 border-r border-border bg-card/30 backdrop-blur-sm flex flex-col py-2 overflow-y-auto">
-      {sections.map((section, si) => (
-        <div key={section.label}>
-          {si > 0 && <div className="mx-3 my-1.5 h-px bg-border/40" />}
-          <p className="px-2 mb-0.5 text-[7px] font-mono uppercase tracking-[0.2em] text-muted-foreground/30 text-center select-none">
-            {section.label}
-          </p>
-          {section.items.map((item) => {
-            const isActive = activePanel === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onPanelSwitch(item.id);
-                  logInteraction("workspace_tab_switch", { to: item.id });
-                }}
-                title={item.label}
-                className={`relative flex flex-col items-center justify-center w-full h-11 gap-0.5 transition-all ${
-                  isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground/50 hover:text-foreground/80"
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="ws-sidebar-indicator"
-                    className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r-full bg-foreground"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-                {isActive && (
-                  <motion.div
-                    layoutId="ws-sidebar-bg"
-                    className="absolute inset-x-1 inset-y-0.5 rounded-lg bg-foreground/[0.04]"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-                <item.icon size={16} className="relative z-10" />
-                <span className="text-[7px] font-medium relative z-10 leading-none tracking-wide">{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      ))}
-    </nav>
+    <motion.nav
+      animate={{ width: collapsed ? 52 : 200 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      className="shrink-0 border-r border-border bg-card/60 backdrop-blur-md flex flex-col overflow-hidden relative"
+    >
+      {/* Collapse toggle */}
+      <button
+        onClick={onToggle}
+        className="absolute -right-3 top-4 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-surface-1 transition-colors shadow-sm"
+      >
+        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+      </button>
+
+      <div className="flex-1 overflow-y-auto py-3 scrollbar-hide">
+        {sections.map((section, si) => (
+          <div key={section.label}>
+            {si > 0 && <div className="mx-3 my-2 h-px bg-border/40" />}
+            {!collapsed && (
+              <p className="px-4 mb-1 text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground/40 select-none">
+                {section.label}
+              </p>
+            )}
+            <div className="space-y-0.5 px-1.5">
+              {section.items.map((item) => {
+                const isActive = activePanel === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onPanelSwitch(item.id);
+                      logInteraction("workspace_tab_switch", { to: item.id });
+                    }}
+                    title={item.label}
+                    className={`relative flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 transition-all group ${
+                      isActive
+                        ? "text-foreground bg-foreground/[0.06]"
+                        : "text-muted-foreground/60 hover:text-foreground/80 hover:bg-foreground/[0.03]"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="ws-sidebar-indicator"
+                        className="absolute left-0 top-1 bottom-1 w-[2px] rounded-r-full bg-foreground"
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                    <item.icon size={16} className="shrink-0 relative z-10" />
+                    {!collapsed && (
+                      <span className="text-xs font-medium relative z-10 leading-none truncate">
+                        {item.label}
+                      </span>
+                    )}
+                    {item.badge && item.badge > 0 && (
+                      <span className="ml-auto flex h-4 min-w-[16px] items-center justify-center rounded-full bg-alert-red text-[8px] font-bold text-white px-1">
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.nav>
   );
 }
