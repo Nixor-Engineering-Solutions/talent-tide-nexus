@@ -381,7 +381,24 @@ const MyGigsTab = () => {
     toast.success("Proposal declined");
   };
 
-  const filteredGigs = filter === "all" ? realGigs : realGigs.filter(g => g.status === filter);
+  const draftGigs = realGigs.filter(g => g.status === "draft");
+  const filteredGigs = filter === "all" ? realGigs.filter(g => g.status !== "draft") : realGigs.filter(g => g.status === filter);
+
+  const publishDraft = async (gigId: string) => {
+    const { error } = await supabase.from("listings").update({ status: "active" } as any).eq("id", gigId);
+    if (!error) {
+      setRealGigs(prev => prev.map(g => g.id === gigId ? { ...g, status: "active" } : g));
+      toast.success("Gig published!");
+    } else toast.error("Failed to publish");
+  };
+
+  const deleteDraft = async (gigId: string) => {
+    const { error } = await supabase.from("listings").delete().eq("id", gigId);
+    if (!error) {
+      setRealGigs(prev => prev.filter(g => g.id !== gigId));
+      toast.success("Draft deleted");
+    }
+  };
 
   return (
     <div className="space-y-6">
