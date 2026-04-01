@@ -1,8 +1,9 @@
-import { Star, Flame, Clock, Eye, Shield, ArrowRight, GraduationCap, Trophy } from "lucide-react";
+import { Star, Flame, Clock, Eye, Shield, ArrowRight, GraduationCap, Trophy, Tag, Repeat, Package } from "lucide-react";
 import { type Gig } from "../data/mockData";
 import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
 import GuildPreviewPopover from "./GuildPreviewPopover";
+import { formatDistanceToNow } from "date-fns";
 
 interface GigCardProps {
   gig: Gig;
@@ -143,11 +144,26 @@ export default function GigCard({ gig, viewMode, onClick }: GigCardProps) {
         </div>
       </div>
 
+      {/* Tags */}
+      {gig.tags && gig.tags.length > 0 && (
+        <div className="px-4 pb-2 flex flex-wrap gap-1">
+          {gig.tags.slice(0, 3).map(t => (
+            <span key={t} className="text-[9px] font-mono bg-surface-2 text-muted-foreground px-1.5 py-0.5 rounded">{t}</span>
+          ))}
+          {gig.tags.length > 3 && <span className="text-[9px] text-muted-foreground">+{gig.tags.length - 3}</span>}
+        </div>
+      )}
+
       {/* Footer stats */}
       <div className="px-4 pb-3 flex items-center gap-3 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-0.5"><Eye className="w-3 h-3" />{gig.views}</span>
         <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{gig.deliveryDays}d delivery</span>
-        <span>{gig.completedSwaps} swaps</span>
+        <span className="flex items-center gap-0.5"><Repeat className="w-3 h-3" />{gig.completedSwaps} swaps</span>
+        {gig.posted && (
+          <span>{(() => { try { return formatDistanceToNow(new Date(gig.posted), { addSuffix: true }); } catch { return gig.posted; } })()}</span>
+        )}
+        {(gig as any).tiers && <span className="flex items-center gap-0.5 text-court-blue"><Package className="w-3 h-3" />3 tiers</span>}
+        {(gig as any).is_subscription && <span className="text-badge-gold font-mono">SUB</span>}
       </div>
     </button>
   );

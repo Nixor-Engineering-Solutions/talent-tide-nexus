@@ -21,6 +21,7 @@ const modeRoutes: Record<string, string> = {
   flash: "/marketplace/flash-market",
   projects: "/marketplace/projects",
   requests: "/marketplace/requests",
+  contests: "/marketplace/contests",
 };
 
 const eloOptions = ["Any", "Bronze", "Silver", "Gold", "Diamond"];

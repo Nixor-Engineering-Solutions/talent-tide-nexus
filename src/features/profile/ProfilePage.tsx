@@ -9,7 +9,7 @@ import {
   Eye, EyeOff, GripVertical, Hash, BarChart3, ListChecks, Code,
   ExternalLink, Bookmark, Newspaper, MessageCircle, ArrowUpRight,
   Palette, Type, Image as ImageIcon, LinkIcon, Vote, Minus,
-  Briefcase, Send
+  Briefcase, Send, Heart
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
@@ -46,6 +46,10 @@ const PREMADE_SECTIONS = [
   { type: "services", title: "Services", icon: Briefcase },
   { type: "testimonials", title: "Testimonials", icon: Star },
   { type: "contact", title: "Contact Info", icon: Send },
+  { type: "needs", title: "What I'm Looking For", icon: Target },
+  { type: "interests", title: "Interests & Hobbies", icon: Heart },
+  { type: "availability", title: "Availability & Rates", icon: Clock },
+  { type: "languages", title: "Languages", icon: Globe },
   { type: "custom", title: "Custom Section", icon: Type },
 ];
 

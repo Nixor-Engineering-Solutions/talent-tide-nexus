@@ -53,6 +53,7 @@ const SPOnlyPage = lazy(() => import("./features/marketplace/pages/SPOnlyPage"))
 const FlashMarketPage = lazy(() => import("./features/marketplace/pages/FlashMarketPage"));
 const ProjectsPage = lazy(() => import("./features/marketplace/pages/ProjectsPage"));
 const RequestsPage = lazy(() => import("./features/marketplace/pages/RequestsPage"));
+const ContestsPage = lazy(() => import("./features/marketplace/pages/ContestsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MaintenancePage = lazy(() => import("./pages/Maintenance"));
 const ComingSoonPage = lazy(() => import("./pages/ComingSoon"));
@@ -83,6 +84,7 @@ const AnimatedRoutes = () => {
           <Route path="/marketplace/flash-market" element={<FlashMarketPage />} />
           <Route path="/marketplace/projects" element={<ProjectsPage />} />
           <Route path="/marketplace/requests" element={<RequestsPage />} />
+          <Route path="/marketplace/contests" element={<ContestsPage />} />
           <Route path="/marketplace/:gigId" element={<GigDetailPage />} />
           <Route path="/legal" element={<LegalPage />} />
           <Route path="/roadmap" element={<RoadmapPage />} />
