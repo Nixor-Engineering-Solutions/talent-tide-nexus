@@ -9,7 +9,7 @@ import {
   Eye, EyeOff, GripVertical, Hash, BarChart3, ListChecks, Code,
   ExternalLink, Bookmark, Newspaper, MessageCircle, ArrowUpRight,
   Palette, Type, Image as ImageIcon, LinkIcon, Vote, Minus,
-  Briefcase, Send
+  Briefcase, Send, Heart
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import PageTransition from "@/components/shared/PageTransition";
