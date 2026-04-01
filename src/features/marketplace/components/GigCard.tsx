@@ -1,8 +1,9 @@
-import { Star, Flame, Clock, Eye, Shield, ArrowRight, GraduationCap, Trophy } from "lucide-react";
+import { Star, Flame, Clock, Eye, Shield, ArrowRight, GraduationCap, Trophy, Tag, Repeat, Package } from "lucide-react";
 import { type Gig } from "../data/mockData";
 import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
 import GuildPreviewPopover from "./GuildPreviewPopover";
+import { formatDistanceToNow } from "date-fns";
 
 interface GigCardProps {
   gig: Gig;
