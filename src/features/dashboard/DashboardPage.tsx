@@ -270,13 +270,17 @@ const MyGigsTab = () => {
       setRealGigs((gigsRes.data || []).map((l: any) => ({
         id: l.id,
         title: l.title,
-        status: l.status === "active" ? "active" : l.status === "completed" ? "completed" : "pending",
+        status: l.status,
         partner: null,
         stage: 0,
         totalStages: 3,
         sp: l.points || 0,
         format: l.format || "Direct Swap",
         deadline: null,
+        tags: l.tags || [],
+        is_subscription: l.is_subscription,
+        tiers: l.tiers,
+        updated_at: l.updated_at,
       })));
       // Enrich proposals with sender profile
       const props = proposalsRes.data || [];
