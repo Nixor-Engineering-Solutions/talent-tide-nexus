@@ -35,6 +35,7 @@ export default function GigDetailPage() {
   const [loading, setLoading] = useState(true);
   const [proposalOpen, setProposalOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [selectedTierState, setSelectedTierState] = useState("basic");
   const { counts, userState, toggle, share, report } = useGigInteractions(gigId);
 
   useEffect(() => {
