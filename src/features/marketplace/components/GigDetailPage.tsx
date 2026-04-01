@@ -102,7 +102,8 @@ export default function GigDetailPage() {
     setProposalOpen(true);
   };
 
-  const [selectedTier, setSelectedTier] = useState("basic");
+  const selectedTier = selectedTierState;
+  const setSelectedTier = setSelectedTierState;
 
   // Format-specific panels
   const isAuction = listing.format === "Auction";
