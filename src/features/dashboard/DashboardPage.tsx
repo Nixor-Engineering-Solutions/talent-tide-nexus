@@ -11,7 +11,7 @@ import {
   Send, Paperclip, Tag, DollarSign, Layers, GitMerge, Timer, Crown,
   ChevronLeft, User, Building2, BarChart3, Wallet, History, Heart,
   Target, Coins, GraduationCap, MapPin, Globe, Edit3, Camera, Upload,
-  Palette, Code, PenTool, Video, Music, BarChart, Megaphone, Cpu, Search
+  Palette, Code, PenTool, Video, Music, BarChart, Megaphone, Cpu, Search, Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
