@@ -138,11 +138,14 @@ export default function GigDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <span className={`flex items-center gap-1 text-xs font-mono ${fColor} bg-surface-2 px-2.5 py-1 rounded-lg`}>
                   <FormatIcon className="w-3.5 h-3.5" />{listing.format}
                 </span>
                 {listing.hot && <span className="text-xs font-mono text-alert-red bg-alert-red/10 px-2 py-1 rounded-lg">🔥 Trending</span>}
+                {listing.is_subscription && <span className="text-xs font-mono text-badge-gold bg-badge-gold/10 px-2 py-1 rounded-lg">Subscription</span>}
+                {hasTiers && <span className="flex items-center gap-1 text-xs font-mono text-court-blue bg-court-blue/10 px-2 py-1 rounded-lg"><Package className="w-3 h-3" />3 Packages</span>}
+                {postedAgo && <span className="text-[10px] text-muted-foreground ml-auto">{postedAgo}</span>}
               </div>
               <h1 className="font-heading font-black text-3xl text-foreground">{listing.title}</h1>
               {listing.wants && (
@@ -150,12 +153,90 @@ export default function GigDetailPage() {
                   <ArrowRight className="w-4 h-4" /> Looking for: <span className="text-foreground font-heading font-semibold">{listing.wants}</span>
                 </p>
               )}
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {tags.map(t => (
+                    <span key={t} className="flex items-center gap-1 text-[10px] font-mono bg-surface-2 text-muted-foreground px-2 py-0.5 rounded-md">
+                      <Tag className="w-2.5 h-2.5" />{t}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><Repeat className="w-3.5 h-3.5" />{listing.completed_swaps || 0} swaps completed</span>
+                <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" />{counts.views || listing.views || 0} views</span>
+              </div>
             </div>
 
             <div>
               <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">About This Gig</h3>
               <p className="text-foreground/90 leading-relaxed">{listing.description}</p>
             </div>
+
+            {/* Tier Selector */}
+            {hasTiers && (
+              <div>
+                <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Packages</h3>
+                <TierSelector tiers={listing.tiers} selected={selectedTier} onSelect={setSelectedTier} revisionCostSp={listing.revision_cost_sp} />
+              </div>
+            )}
+
+            {/* Contest */}
+            {isContest && listing.contest_config && (
+              <div className="rounded-xl border border-badge-gold/20 bg-badge-gold/5 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Trophy className="w-4 h-4 text-badge-gold" />
+                  <h3 className="text-sm font-heading font-bold text-foreground">Contest Prizes</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[{ label: "1st Place", emoji: "🥇", key: "prize_1st" }, { label: "2nd Place", emoji: "🥈", key: "prize_2nd" }, { label: "3rd Place", emoji: "🥉", key: "prize_3rd" }].map(p => (
+                    <div key={p.key} className="text-center rounded-lg bg-surface-1 p-3">
+                      <span className="text-lg">{p.emoji}</span>
+                      <p className="text-lg font-mono font-bold text-foreground mt-1">{(listing.contest_config as any)[p.key] || 0} SP</p>
+                      <p className="text-[10px] text-muted-foreground">{p.label}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                  <span>Max entries: {(listing.contest_config as any).max_entries || "∞"}</span>
+                  <span>Participation: +{(listing.contest_config as any).participation_sp || 0} SP</span>
+                </div>
+              </div>
+            )}
+
+            {/* Requirements */}
+            {requirements.length > 0 && (
+              <div>
+                <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Requirements from Seller</h3>
+                <div className="space-y-2">
+                  {requirements.map((r, i) => (
+                    <div key={i} className="flex items-start gap-2 p-3 rounded-lg bg-surface-1 border border-border">
+                      <HelpCircle className="w-3.5 h-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-foreground">{r}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* FAQ */}
+            {faq.length > 0 && (
+              <div>
+                <h3 className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">FAQ</h3>
+                <Accordion type="multiple" className="space-y-1">
+                  {faq.map((item, i) => (
+                    <AccordionItem key={i} value={`faq-${i}`} className="border border-border rounded-lg overflow-hidden">
+                      <AccordionTrigger className="px-4 py-3 text-sm font-heading font-semibold text-foreground hover:no-underline">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-3 text-sm text-muted-foreground">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            )}
 
             {/* Auction-specific: bid history */}
             {isAuction && (
