@@ -5,6 +5,7 @@ import {
   ArrowLeft, Star, Shield, Clock, Eye, ArrowRight, Heart, Share2, Bookmark,
   MessageSquare, Flag, GraduationCap, CheckCircle2, ChevronRight, Gavel, Coins, Layers,
   GitMerge, Zap, Briefcase, HandHeart, Users, Calendar, AlertTriangle, Radio,
+  Trophy, Tag, Repeat, HelpCircle, ChevronDown, Package,
 } from "lucide-react";
 import AppNav from "@/components/shared/AppNav";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,8 +13,11 @@ import { eloTier, formatIcon, formatColor } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
 import ProposalModal from "./ProposalModal";
 import LoginPrompt from "@/components/shared/LoginPrompt";
+import TierSelector from "./TierSelector";
 import { useAuth } from "@/lib/auth-context";
 import { useGigInteractions } from "../hooks/useGigInteractions";
+import { formatDistanceToNow } from "date-fns";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const deliveryStages = [
   { stage: "Requirements Review", days: 1 },
