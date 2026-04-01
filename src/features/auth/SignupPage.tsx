@@ -301,7 +301,9 @@ const SignupPage = () => {
               <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < step ? "bg-foreground" : "bg-border"}`} />
             ))}
           </div>
-          <p className="mb-6 text-center text-[10px] text-muted-foreground">Step {step} of {TOTAL_STEPS}</p>
+          <p className="mb-6 text-center text-[10px] text-muted-foreground">
+            Step {step} of {TOTAL_STEPS} — {[1, 2, 3, 6, 7, 8].includes(step) ? <span className="text-foreground font-semibold">Required</span> : <span className="text-muted-foreground">Optional</span>}
+          </p>
 
           <motion.div className="rounded-2xl border border-border bg-card p-7 sm:p-9" layout>
             <AnimatePresence mode="wait">
