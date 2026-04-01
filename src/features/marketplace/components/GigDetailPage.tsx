@@ -101,6 +101,8 @@ export default function GigDetailPage() {
     setProposalOpen(true);
   };
 
+  const [selectedTier, setSelectedTier] = useState("basic");
+
   // Format-specific panels
   const isAuction = listing.format === "Auction";
   const isSPOnly = listing.format === "SP Only";
@@ -109,6 +111,12 @@ export default function GigDetailPage() {
   const isFusion = listing.format === "Skill Fusion";
   const isProject = listing.format === "Projects";
   const isRequest = listing.format === "Request";
+  const isContest = listing.format === "Contest";
+  const hasTiers = listing.tiers && listing.tiers.basic;
+  const tags: string[] = listing.tags || [];
+  const faq: { question: string; answer: string }[] = Array.isArray(listing.gig_faq) ? listing.gig_faq as any : [];
+  const requirements: string[] = listing.requirements || [];
+  const postedAgo = (() => { try { return formatDistanceToNow(new Date(listing.created_at), { addSuffix: true }); } catch { return ""; } })();
 
   return (
     <div className="min-h-screen bg-background">
