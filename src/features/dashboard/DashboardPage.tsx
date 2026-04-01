@@ -456,9 +456,50 @@ const MyGigsTab = () => {
         </div>
       )}
 
+      {/* Draft Cards */}
+      {draftGigs.length > 0 && (
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-heading text-lg font-bold text-foreground flex items-center gap-2">
+              <FileText size={16} className="text-muted-foreground" /> Drafts
+            </h3>
+            <span className="text-xs text-muted-foreground">{draftGigs.length} draft{draftGigs.length > 1 ? "s" : ""}</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {draftGigs.map(gig => (
+              <motion.div key={gig.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-xl border border-dashed border-border bg-surface-1 p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{gig.title || "Untitled"}</p>
+                    <p className="text-[10px] text-muted-foreground">{gig.format} · Last edited {gig.updated_at ? new Date(gig.updated_at).toLocaleDateString() : "recently"}</p>
+                  </div>
+                  <Badge className="bg-surface-2 text-muted-foreground border-none text-[9px]">DRAFT</Badge>
+                </div>
+                {gig.tags?.length > 0 && (
+                  <div className="flex gap-1 mb-3">
+                    {gig.tags.slice(0, 3).map((t: string) => <span key={t} className="text-[9px] font-mono bg-surface-2 px-1.5 py-0.5 rounded text-muted-foreground">{t}</span>)}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <button onClick={() => publishDraft(gig.id)} className="flex-1 rounded-lg bg-foreground text-background text-xs font-semibold py-2 hover:bg-foreground/90 transition-colors flex items-center justify-center gap-1">
+                    <Send size={12} /> Publish
+                  </button>
+                  <button onClick={() => deleteDraft(gig.id)} className="rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:text-alert-red transition-colors">
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-2xl font-bold text-foreground">My Gigs</h2>
         <div className="flex gap-2">
+          <Link to="/dashboard?tab=create-gig" className="flex items-center gap-1.5 rounded-lg bg-foreground text-background px-4 py-2 text-xs font-semibold hover:bg-foreground/90 transition-colors">
+            <Plus size={14} /> New Gig
+          </Link>
           {["all", "active", "pending", "completed"].map((f) => (
             <button
               key={f}
