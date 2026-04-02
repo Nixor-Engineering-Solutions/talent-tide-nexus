@@ -1,4 +1,4 @@
-import { Coins, Star, Shield, Clock, Eye } from "lucide-react";
+import { Coins, Star, Shield, Clock, Eye, Package, RefreshCw } from "lucide-react";
 import { type SPOnlyGig } from "../data/mockData";
 import { eloTier } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
@@ -7,14 +7,28 @@ interface Props { gig: SPOnlyGig; onClick: () => void; }
 
 export default function SPOnlyCard({ gig, onClick }: Props) {
   const tier = eloTier(gig.elo);
+  const hasTiers = (gig as any).tiers;
+  const isSubscription = (gig as any).is_subscription;
 
   return (
     <button onClick={onClick} className={`w-full text-left rounded-2xl border ${tier.border} bg-card hover:bg-surface-1 transition-all hover:-translate-y-1 hover:shadow-lg ${tier.glow} overflow-hidden`}>
       <div className="px-4 pt-4 pb-3">
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1 text-[10px] font-mono text-badge-gold bg-badge-gold/10 px-2 py-0.5 rounded-md">
-            <Coins className="w-3 h-3" />SP ONLY
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1 text-[10px] font-mono text-badge-gold bg-badge-gold/10 px-2 py-0.5 rounded-md">
+              <Coins className="w-3 h-3" />SP ONLY
+            </span>
+            {hasTiers && (
+              <span className="flex items-center gap-0.5 text-[10px] font-mono text-court-blue bg-court-blue/10 px-1.5 py-0.5 rounded-md">
+                <Package className="w-3 h-3" />3 tiers
+              </span>
+            )}
+            {isSubscription && (
+              <span className="flex items-center gap-0.5 text-[10px] font-mono text-teal-400 bg-teal-400/10 px-1.5 py-0.5 rounded-md">
+                <RefreshCw className="w-3 h-3" />SUB
+              </span>
+            )}
+          </div>
           {gig.hot && <span className="text-[10px] font-mono text-alert-red">🔥 Popular</span>}
         </div>
 

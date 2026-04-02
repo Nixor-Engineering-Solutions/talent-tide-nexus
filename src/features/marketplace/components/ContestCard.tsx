@@ -11,10 +11,13 @@ export default function ContestCard({ gig, onClick }: ContestCardProps) {
   const tier = eloTier(gig.elo);
   const contestConfig = (gig as any).contest_config;
   const prizes = contestConfig ? [contestConfig.prize_1st, contestConfig.prize_2nd, contestConfig.prize_3rd] : [gig.points, Math.round(gig.points * 0.5), Math.round(gig.points * 0.25)];
+  const maxEntries = 50;
+  const currentEntries = gig.bidCount || 0;
+  const fillPercent = Math.min((currentEntries / maxEntries) * 100, 100);
 
   return (
     <button onClick={onClick} className="w-full text-left rounded-2xl border border-badge-gold/20 bg-card hover:bg-surface-1 transition-all hover:-translate-y-1 hover:shadow-lg overflow-hidden group">
-      <div className="bg-gradient-to-r from-badge-gold/10 to-badge-gold/5 px-4 py-3 flex items-center justify-between">
+      <div className="bg-badge-gold/5 px-4 py-3 flex items-center justify-between border-b border-badge-gold/10">
         <span className="flex items-center gap-1.5 text-xs font-heading font-bold text-badge-gold">
           <Trophy className="w-3.5 h-3.5" /> Contest
         </span>
@@ -24,11 +27,14 @@ export default function ContestCard({ gig, onClick }: ContestCardProps) {
           </span>
         )}
       </div>
+
       <div className="px-4 py-3">
         <h3 className="font-heading font-bold text-foreground text-base leading-tight">{gig.skill}</h3>
         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{gig.desc}</p>
       </div>
-      <div className="px-4 pb-3 flex items-center gap-3">
+
+      {/* Prizes */}
+      <div className="px-4 pb-2 flex items-center gap-3">
         {["🥇", "🥈", "🥉"].map((medal, i) => (
           <div key={i} className="flex items-center gap-1 text-[10px]">
             <span>{medal}</span>
@@ -36,7 +42,20 @@ export default function ContestCard({ gig, onClick }: ContestCardProps) {
           </div>
         ))}
       </div>
+
+      {/* Entry progress bar */}
+      <div className="px-4 pb-3">
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
+          <span>{currentEntries}/{maxEntries} entries</span>
+          <span className="text-skill-green font-mono font-bold">+10 SP participation</span>
+        </div>
+        <div className="w-full h-1.5 rounded-full bg-surface-2">
+          <div className="h-full rounded-full bg-badge-gold transition-all" style={{ width: `${fillPercent}%` }} />
+        </div>
+      </div>
+
       <div className="h-px bg-border mx-4" />
+
       <div className="px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className={`w-6 h-6 rounded-md ${tier.bg} flex items-center justify-center text-[10px] font-bold ${tier.color}`}>
@@ -45,7 +64,7 @@ export default function ContestCard({ gig, onClick }: ContestCardProps) {
           <span className="text-xs text-muted-foreground">{gig.seller}</span>
         </div>
         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-0.5"><Users className="w-3 h-3" />{gig.bidCount || 0} entries</span>
+          <span className="flex items-center gap-0.5"><Users className="w-3 h-3" />{currentEntries} entries</span>
           <span className="flex items-center gap-0.5"><Coins className="w-3 h-3" />{gig.points} SP</span>
         </div>
       </div>

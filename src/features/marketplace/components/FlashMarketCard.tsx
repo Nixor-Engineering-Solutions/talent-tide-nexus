@@ -1,4 +1,6 @@
-import { Zap, Clock, Star, Shield, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Zap, Clock, Shield } from "lucide-react";
+import { motion } from "framer-motion";
 import { type Gig } from "../data/mockData";
 import { eloTier } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
@@ -7,6 +9,17 @@ interface Props { gig: Gig; onClick: () => void; }
 
 export default function FlashMarketCard({ gig, onClick }: Props) {
   const tier = eloTier(gig.elo);
+  const [timeLeft, setTimeLeft] = useState((gig.endsIn || 120) * 60); // convert to seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const t = setInterval(() => setTimeLeft(p => Math.max(0, p - 1)), 1000);
+    return () => clearInterval(t);
+  }, [timeLeft]);
+
+  const hrs = Math.floor(timeLeft / 3600);
+  const mins = Math.floor((timeLeft % 3600) / 60);
+  const secs = timeLeft % 60;
 
   return (
     <button onClick={onClick} className="w-full text-left rounded-2xl border border-badge-gold/20 bg-card hover:bg-surface-1 transition-all hover:-translate-y-1 hover:shadow-lg overflow-hidden">
@@ -16,11 +29,18 @@ export default function FlashMarketCard({ gig, onClick }: Props) {
             <span className="flex items-center gap-1 text-[10px] font-mono text-badge-gold bg-badge-gold/10 px-2 py-0.5 rounded-md">
               <Zap className="w-3 h-3" />FLASH
             </span>
-            <span className="text-[10px] font-mono text-badge-gold bg-badge-gold/10 px-1.5 py-0.5 rounded-md font-bold">
+            <motion.span
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+              className="text-[10px] font-mono text-badge-gold bg-badge-gold/10 px-1.5 py-0.5 rounded-md font-bold"
+            >
               2.5× SP
-            </span>
+            </motion.span>
           </div>
-          <span className="text-[10px] text-muted-foreground font-mono">{gig.posted}</span>
+          {/* Live countdown */}
+          <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+            {String(hrs).padStart(2, "0")}:{String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
+          </span>
         </div>
 
         <h3 className="font-heading font-bold text-foreground text-base mt-3">{gig.skill}</h3>
