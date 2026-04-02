@@ -6,6 +6,12 @@ import UserPreviewPopover from "./UserPreviewPopover";
 interface Props { fusion: SkillFusion; onClick: () => void; }
 
 export default function SkillFusionCard({ fusion, onClick }: Props) {
+  const complexityColor = fusion.complexity === "Advanced" || fusion.complexity === "Expert"
+    ? "bg-alert-red/10 text-alert-red"
+    : fusion.complexity === "Intermediate"
+    ? "bg-badge-gold/10 text-badge-gold"
+    : "bg-skill-green/10 text-skill-green";
+
   return (
     <button onClick={onClick} className="w-full text-left rounded-2xl border border-purple-400/20 bg-card hover:bg-surface-1 transition-all hover:-translate-y-1 hover:shadow-lg overflow-hidden">
       <div className="px-4 pt-4 pb-3">
@@ -13,9 +19,7 @@ export default function SkillFusionCard({ fusion, onClick }: Props) {
           <span className="flex items-center gap-1 text-[10px] font-mono text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded-md">
             <GitMerge className="w-3 h-3" />SKILL FUSION
           </span>
-          <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-            fusion.complexity === "Advanced" ? "bg-alert-red/10 text-alert-red" : "bg-badge-gold/10 text-badge-gold"
-          }`}>
+          <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${complexityColor}`}>
             {fusion.complexity}
           </span>
         </div>
@@ -39,6 +43,10 @@ export default function SkillFusionCard({ fusion, onClick }: Props) {
               </UserPreviewPopover>
             );
           })}
+          {/* Participant count */}
+          <span className="flex items-center gap-1 text-[10px] text-purple-400">
+            <Users className="w-3 h-3" />{fusion.participants.length}
+          </span>
         </div>
 
         {/* Looking for */}
