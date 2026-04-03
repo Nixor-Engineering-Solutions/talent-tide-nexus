@@ -1,103 +1,151 @@
 
 
-# Custom Gig Cards & Center Modal Popups — Per Format
+# Dedicated Format Pages + Real Data Cards
 
 ## Problem
-Currently, `GigCard.tsx` is a generic card used across explore/trending/recommended modes. The `GigQuickView` is a right-side drawer, not a centered popup. Format-specific cards exist (AuctionCard, ContestCard, etc.) but aren't used in explore/trending views, and the popup doesn't differentiate enough per format.
 
-## What Changes
+1. **GigDetailPage.tsx** is a single 552-line file with `if` branches for each format. Each format gets a small panel rather than a full, purpose-built page.
+2. **Format listing pages** (AuctionsPage, ContestsPage, etc.) render inline cards with hardcoded values instead of using their format-specific card components.
+3. **Cards display hardcoded data** — `gig.views` comes from the `Gig` interface mock, `"Reserve Met"` is always shown on AuctionCard, ContestCard hardcodes `maxEntries = 50`, etc. None of this reflects real DB values.
 
-### 1. Replace GigQuickView Drawer → Centered Modal Popup
-- Convert from `fixed right-0 max-w-[480px]` slide-in drawer to a **centered overlay modal** (`fixed inset-0 flex items-center justify-center`)
-- Modal size: `max-w-3xl w-full max-h-[90vh]` with scrollable interior
-- Each format gets its own **full popup layout** — not just a panel injected into a shared shell
-- Backdrop with blur + click-to-close
-- Smooth scale+fade entrance via Framer Motion
+## Solution
 
-### 2. Format-Specific Popup Components (inside GigQuickView)
-Create 10 dedicated popup layouts, each with unique structure, colors, and content:
+### 1. Split GigDetailPage into 10 Format-Specific Detail Pages
 
-**Direct Swap Popup**: Two-column "Offering ↔ Wants" exchange visual, delivery timeline stages, seller card, SP bonus, tags, reviews, "Propose Swap" CTA
+Replace the monolithic `GigDetailPage.tsx` with a lightweight router component that delegates to dedicated pages:
 
-**Auction Popup**: Red accent theme. Live countdown timer (HRS:MIN:SEC), current bid + bid history scrollable list, bid input with validation, reserve price indicator, bid activity sparkline, "Place Bid" CTA
-
-**SP Only Popup**: Gold accent. Package comparison table if tiers exist (Basic/Standard/Premium columns), single price display if no tiers, user's SP balance + after-purchase calculation, subscription badge if recurring, "Buy Now" CTA
-
-**Co-Creation Popup**: Blue accent. Team roster with filled/open slots per role, "Apply for Role" dropdown selector, team chat preview (last 3 messages), progress bar if workspace exists, "Request to Join" CTA
-
-**Skill Fusion Popup**: Purple accent. Required skills as connected node visualization, participant cards with skill badges + ELO, complexity meter (Easy→Expert), open skill slots, "Apply to Fuse" CTA
-
-**Projects Popup**: Orange accent. Kanban-style role board (columns: Open, Applied, Filled), project timeline as horizontal bars, budget breakdown per role, applicant counts, deadline countdown, "Apply for Role" CTA
-
-**Flash Market Popup**: Gold-to-red gradient accent. Large pulsing countdown timer, 2.5x SP multiplier badge (animated), urgency banner, claim button with instant confirmation, "Grab Flash Deal" CTA
-
-**Contest Popup**: Gold accent. Prize podium visual (1st/2nd/3rd with SP amounts), entry gallery grid (if entries exist), entry count vs max, submit entry form (upload + description), deadline countdown, participation SP display, "Submit Entry" CTA
-
-**Request Popup**: Green accent. "What I Need" detailed section, budget range display, response count, "Submit Your Offer" form with custom proposal textarea, deadline if set
-
-**Subscription Popup**: Teal accent. Billing cycle display (weekly/biweekly/monthly), renewal terms, tier packages if applicable, cancel anytime badge, "Subscribe" CTA
-
-### 3. Format-Specific Marketplace Cards
-Stop using generic `GigCard` in explore/trending/recommended. Instead, **route each gig to its format-specific card**:
-
-In `MarketplacePage.tsx` `renderContent()` for explore/trending/recommended:
 ```
-{gigs.map(gig => {
-  switch(gig.format) {
-    case "Auction": return <AuctionCard ... />
-    case "SP Only": return <SPOnlyCard ... />
-    case "Co-Creation": return <CoCreationCard ... />
-    case "Skill Fusion": return <SkillFusionCard ... />
-    case "Flash Market": return <FlashMarketCard ... />
-    case "Contest": return <ContestCard ... />
-    case "Projects": return <ProjectCard ... />
-    case "Requests": return <RequestCard ... />
-    default: return <DirectSwapCard ... />
-  }
-})}
+/marketplace/:gigId → GigDetailRouter.tsx
+  → reads listing.format from DB
+  → renders AuctionDetailPage | ContestDetailPage | SPOnlyDetailPage | etc.
 ```
 
-Create a new `DirectSwapCard.tsx` for the default swap format (extracted from current GigCard grid view).
+Each detail page is a standalone file with format-appropriate sections. All share reusable sub-components (seller card, reviews, tags, FAQ, interaction bar, tier selector).
 
-### 4. Card Design Enhancements (per format)
-Each card already exists but needs enrichment:
+**Shared sub-components** (new folder `src/features/marketplace/components/detail/`):
+- `DetailSellerCard` — avatar, ELO tier, rating, verified, university, response time, completed swaps
+- `DetailInteractionBar` — like/save/share/report with real counts from `useGigInteractions`
+- `DetailReviews` — star breakdown + review list
+- `DetailTags` — tag chips from `listing.tags`
+- `DetailFAQ` — accordion from `listing.gig_faq`
+- `DetailRequirements` — from `listing.requirements`
+- `DetailTimeline` — delivery stages
+- `DetailStatsGrid` — delivery days, views, likes, live viewers
 
-- **AuctionCard**: Add animated bid pulse, reserve met/unmet badge
-- **ContestCard**: Add entry count progress bar, participation SP badge
-- **FlashMarketCard**: Add animated countdown, pulsing multiplier
-- **ProjectCard**: Add role fill progress bar (e.g., "3/5 roles filled")
-- **CoCreationCard**: Add team avatar stack, open slot count
-- **SkillFusionCard**: Add complexity color coding, participant count
-- **SPOnlyCard**: Add tier badge ("3 packages"), subscription indicator
-- **RequestCard**: Add response count badge, budget range
-- **DirectSwapCard** (new): Clean offering↔wants visual, SP bonus, seller row
+**Format detail pages** (`src/features/marketplace/components/detail/`):
 
-### 5. Shared Popup Sections (reusable)
-Extract reusable sub-components used across popups:
-- `PopupSellerCard` — avatar, name, ELO tier, rating, verified, university
-- `PopupInteractionBar` — like/save/share/report with counts
-- `PopupStatsGrid` — delivery, views, swaps, live viewers
-- `PopupReviews` — star breakdown + review list
-- `PopupTags` — tag chips
-- `PopupSPBonus` — SP bonus display
+| Page | Unique Sections |
+|------|----------------|
+| **AuctionDetail** | Live bid panel (current bid, bid count, countdown), bid history table from `auction_bids` table (new), reserve price indicator from `auction_config.reserve_price`, place bid form with validation, auto-extend rules |
+| **ContestDetail** | Prize podium (1st/2nd/3rd from `contest_config`), entry gallery grid from `contest_entries` table (new), submit entry form (upload + description), deadline countdown, entry count vs `contest_config.max_entries`, participation SP |
+| **SPOnlyDetail** | TierSelector (reused), single-price display if no tiers, subscription badge + interval from `is_subscription`/`subscription_interval`, "Buy Now" CTA per tier |
+| **CoCreationDetail** | Team roster from `roles_needed` jsonb (filled/open slots), "Apply for Role" per open slot, progress tracker, collaboration description |
+| **SkillFusionDetail** | Required skills from `fusion_skills`, complexity meter, participant slots with skill badges, "Apply to Fuse" form |
+| **ProjectDetail** | Role board from `roles_needed` (role name, skill, filled/open), project timeline, budget breakdown per role, applicant counts, deadline countdown |
+| **FlashMarketDetail** | Large countdown timer, SP multiplier from `flash_config.sp_multiplier`, urgency banner, claim button |
+| **RequestDetail** | "What I Need" section, budget range, response count from `listing_interactions`, "Submit Your Offer" form |
+| **DirectSwapDetail** | Two-column "Offering ↔ Wants" visual, delivery timeline, SP bonus |
+| **SubscriptionDetail** | Billing cycle from `subscription_interval`, renewal terms, tier packages, cancel badge |
 
-## Files Modified
-- `src/features/marketplace/components/GigQuickView.tsx` — Complete rewrite: drawer→centered modal, 10 format-specific popup layouts
-- `src/features/marketplace/MarketplacePage.tsx` — Route explore/trending/recommended to format-specific cards instead of generic GigCard
-- `src/features/marketplace/components/AuctionCard.tsx` — Add pulse animation, reserve badge
-- `src/features/marketplace/components/ContestCard.tsx` — Add progress bar, participation badge
-- `src/features/marketplace/components/FlashMarketCard.tsx` — Add countdown, pulsing multiplier
-- `src/features/marketplace/components/ProjectCard.tsx` — Add role fill progress
-- `src/features/marketplace/components/CoCreationCard.tsx` — Add avatar stack, open count
-- `src/features/marketplace/components/SkillFusionCard.tsx` — Add complexity colors, count
-- `src/features/marketplace/components/SPOnlyCard.tsx` — Add tier badge, subscription indicator
-- `src/features/marketplace/components/RequestCard.tsx` — Add onClick + response badge
+### 2. New DB Tables for Auction Bids & Contest Entries
+
+**`auction_bids`**:
+```sql
+CREATE TABLE public.auction_bids (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id uuid REFERENCES public.listings(id) ON DELETE CASCADE NOT NULL,
+  bidder_id uuid NOT NULL,
+  amount integer NOT NULL,
+  created_at timestamptz DEFAULT now()
+);
+-- RLS: authenticated users can insert their own bids, all authenticated can read
+```
+
+**`contest_entries`**:
+```sql
+CREATE TABLE public.contest_entries (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id uuid REFERENCES public.listings(id) ON DELETE CASCADE NOT NULL,
+  entrant_id uuid NOT NULL,
+  title text NOT NULL,
+  description text,
+  file_urls text[] DEFAULT '{}',
+  rank integer,
+  created_at timestamptz DEFAULT now()
+);
+-- RLS: authenticated can insert own, all can read
+```
+
+### 3. Remove All Hardcoded Values from Cards
+
+**AuctionCard**: Remove hardcoded `"Reserve Met"` — compute from `auction_config.reserve_price` vs `currentBid`. Remove hardcoded `gig.views` display — only show real interaction counts or omit.
+
+**ContestCard**: Remove `maxEntries = 50` — use `contest_config.max_entries`. Remove fallback prize calculation — use `contest_config` or hide prizes section.
+
+**FlashMarketCard**: Use `flash_config.sp_multiplier` instead of hardcoded `2.5x`. Use `flash_config.duration_hours` for countdown.
+
+**DirectSwapCard**: Remove `gig.views` — use real count from `listing_interactions` or omit from card (detail page shows real counts).
+
+**All cards**: The `views` field on the `Gig` interface currently maps to `listing.views` (a DB column). Cards should use this real value, but if it's 0/null, show nothing rather than "0 views". Remove any synthetic/mock values in the `toGig()` mappers across format pages.
+
+### 4. Update Format Listing Pages to Use Their Card Components
+
+Each format page (AuctionsPage, CoCreationPage, etc.) currently renders inline JSX cards. Instead, they should use their dedicated card components (AuctionCard, CoCreationCard, etc.) — some already do (ContestsPage uses ContestCard), but most don't.
+
+### 5. Route Changes
+
+Replace the single `GigDetailPage` route with `GigDetailRouter`:
+```
+<Route path="/marketplace/:gigId" element={<GigDetailRouter />} />
+```
+
+The router fetches the listing, reads `format`, and renders the correct detail page component.
+
+---
 
 ## Files Created
-- `src/features/marketplace/components/DirectSwapCard.tsx` — New card for default swap format
+
+- `src/features/marketplace/components/detail/GigDetailRouter.tsx` — format router
+- `src/features/marketplace/components/detail/AuctionDetail.tsx`
+- `src/features/marketplace/components/detail/ContestDetail.tsx`
+- `src/features/marketplace/components/detail/SPOnlyDetail.tsx`
+- `src/features/marketplace/components/detail/CoCreationDetail.tsx`
+- `src/features/marketplace/components/detail/SkillFusionDetail.tsx`
+- `src/features/marketplace/components/detail/ProjectDetail.tsx`
+- `src/features/marketplace/components/detail/FlashMarketDetail.tsx`
+- `src/features/marketplace/components/detail/RequestDetail.tsx`
+- `src/features/marketplace/components/detail/DirectSwapDetail.tsx`
+- `src/features/marketplace/components/detail/SubscriptionDetail.tsx`
+- `src/features/marketplace/components/detail/DetailSellerCard.tsx`
+- `src/features/marketplace/components/detail/DetailInteractionBar.tsx`
+- `src/features/marketplace/components/detail/DetailReviews.tsx`
+- `src/features/marketplace/components/detail/DetailTags.tsx`
+- `src/features/marketplace/components/detail/DetailFAQ.tsx`
+- `src/features/marketplace/components/detail/DetailRequirements.tsx`
+- `src/features/marketplace/components/detail/DetailStatsGrid.tsx`
+- DB migration for `auction_bids` and `contest_entries` tables
+
+## Files Modified
+
+- `src/App.tsx` — point `/marketplace/:gigId` to `GigDetailRouter`
+- `src/features/marketplace/components/AuctionCard.tsx` — remove hardcoded reserve badge, use real data
+- `src/features/marketplace/components/ContestCard.tsx` — use `contest_config` values
+- `src/features/marketplace/components/FlashMarketCard.tsx` — use `flash_config` values
+- `src/features/marketplace/components/DirectSwapCard.tsx` — remove hardcoded views
+- `src/features/marketplace/components/SPOnlyCard.tsx` — remove hardcoded views
+- `src/features/marketplace/components/GigCard.tsx` — remove hardcoded views
+- `src/features/marketplace/pages/AuctionsPage.tsx` — use AuctionCard component
+- `src/features/marketplace/pages/CoCreationPage.tsx` — use CoCreationCard component
+- `src/features/marketplace/pages/SPOnlyPage.tsx` — use SPOnlyCard component
+- `src/features/marketplace/pages/FlashMarketPage.tsx` — use FlashMarketCard component
+- `src/features/marketplace/pages/ProjectsPage.tsx` — use ProjectCard component
+- `src/features/marketplace/pages/RequestsPage.tsx` — use RequestCard component
+- `src/features/marketplace/pages/SkillFusionPage.tsx` — use SkillFusionCard component
+- `src/features/marketplace/data/mockData.ts` — extend Gig interface with optional format config fields
 
 ## Implementation Order
-1. Create DirectSwapCard + rewrite GigQuickView as centered modal with all 10 format popups
-2. Update MarketplacePage to route cards by format + enhance all existing cards
-3. Delete or deprecate generic GigCard (keep for list view fallback only)
+
+1. DB migration (auction_bids, contest_entries) + shared detail sub-components
+2. All 10 format detail pages + GigDetailRouter + App.tsx route update
+3. Card cleanup (remove hardcoded values) + format page updates to use card components
 
