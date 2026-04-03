@@ -9,7 +9,9 @@ interface Props { gig: Gig; onClick: () => void; }
 
 export default function FlashMarketCard({ gig, onClick }: Props) {
   const tier = eloTier(gig.elo);
-  const [timeLeft, setTimeLeft] = useState((gig.endsIn || 120) * 60); // convert to seconds
+  const flashConfig = (gig as any).flash_config;
+  const spMultiplier = flashConfig?.sp_multiplier || 2.5;
+  const [timeLeft, setTimeLeft] = useState((gig.endsIn || 120) * 60);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -34,10 +36,9 @@ export default function FlashMarketCard({ gig, onClick }: Props) {
               transition={{ repeat: Infinity, duration: 1.5 }}
               className="text-[10px] font-mono text-badge-gold bg-badge-gold/10 px-1.5 py-0.5 rounded-md font-bold"
             >
-              2.5× SP
+              {spMultiplier}× SP
             </motion.span>
           </div>
-          {/* Live countdown */}
           <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
             {String(hrs).padStart(2, "0")}:{String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
           </span>
@@ -47,7 +48,7 @@ export default function FlashMarketCard({ gig, onClick }: Props) {
         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{gig.desc}</p>
 
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-lg font-mono font-bold text-badge-gold">{Math.round(gig.points * 2.5)} SP</span>
+          <span className="text-lg font-mono font-bold text-badge-gold">{Math.round(gig.points * spMultiplier)} SP</span>
           <span className="text-xs text-muted-foreground line-through">{gig.points} SP</span>
         </div>
       </div>
