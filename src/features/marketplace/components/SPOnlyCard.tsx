@@ -1,4 +1,4 @@
-import { Coins, Star, Shield, Clock, Eye, Package, RefreshCw } from "lucide-react";
+import { Coins, Star, Shield, Clock, Package, RefreshCw } from "lucide-react";
 import { type SPOnlyGig } from "../data/mockData";
 import { eloTier } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
@@ -64,10 +64,9 @@ export default function SPOnlyCard({ gig, onClick }: Props) {
             </div>
           </div>
         </UserPreviewPopover>
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{gig.deliveryDays}d</span>
-          <span className="flex items-center gap-0.5"><Eye className="w-3 h-3" />{gig.views}</span>
-        </div>
+        <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+          <Clock className="w-3 h-3" />{gig.deliveryDays}d
+        </span>
       </div>
     </button>
   );

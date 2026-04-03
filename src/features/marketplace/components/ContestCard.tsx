@@ -10,10 +10,13 @@ interface ContestCardProps {
 export default function ContestCard({ gig, onClick }: ContestCardProps) {
   const tier = eloTier(gig.elo);
   const contestConfig = (gig as any).contest_config;
-  const prizes = contestConfig ? [contestConfig.prize_1st, contestConfig.prize_2nd, contestConfig.prize_3rd] : [gig.points, Math.round(gig.points * 0.5), Math.round(gig.points * 0.25)];
-  const maxEntries = 50;
+  const prizes = contestConfig
+    ? [contestConfig.prize_1st, contestConfig.prize_2nd, contestConfig.prize_3rd]
+    : null;
+  const maxEntries = contestConfig?.max_entries || 0;
   const currentEntries = gig.bidCount || 0;
-  const fillPercent = Math.min((currentEntries / maxEntries) * 100, 100);
+  const participationSP = contestConfig?.participation_sp || 0;
+  const fillPercent = maxEntries > 0 ? Math.min((currentEntries / maxEntries) * 100, 100) : 0;
 
   return (
     <button onClick={onClick} className="w-full text-left rounded-2xl border border-badge-gold/20 bg-card hover:bg-surface-1 transition-all hover:-translate-y-1 hover:shadow-lg overflow-hidden group">
@@ -21,7 +24,7 @@ export default function ContestCard({ gig, onClick }: ContestCardProps) {
         <span className="flex items-center gap-1.5 text-xs font-heading font-bold text-badge-gold">
           <Trophy className="w-3.5 h-3.5" /> Contest
         </span>
-        {gig.endsIn && (
+        {gig.endsIn && gig.endsIn > 0 && (
           <span className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground">
             <Clock className="w-3 h-3" /> {gig.endsIn}m left
           </span>
@@ -33,26 +36,30 @@ export default function ContestCard({ gig, onClick }: ContestCardProps) {
         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{gig.desc}</p>
       </div>
 
-      {/* Prizes */}
-      <div className="px-4 pb-2 flex items-center gap-3">
-        {["🥇", "🥈", "🥉"].map((medal, i) => (
-          <div key={i} className="flex items-center gap-1 text-[10px]">
-            <span>{medal}</span>
-            <span className="font-mono font-bold text-foreground">{prizes[i]} SP</span>
-          </div>
-        ))}
-      </div>
+      {/* Prizes - only show if contest_config exists */}
+      {prizes && (
+        <div className="px-4 pb-2 flex items-center gap-3">
+          {["🥇", "🥈", "🥉"].map((medal, i) => (
+            <div key={i} className="flex items-center gap-1 text-[10px]">
+              <span>{medal}</span>
+              <span className="font-mono font-bold text-foreground">{prizes[i]} SP</span>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* Entry progress bar */}
-      <div className="px-4 pb-3">
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
-          <span>{currentEntries}/{maxEntries} entries</span>
-          <span className="text-skill-green font-mono font-bold">+10 SP participation</span>
+      {/* Entry progress bar - only show if maxEntries is set */}
+      {maxEntries > 0 && (
+        <div className="px-4 pb-3">
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
+            <span>{currentEntries}/{maxEntries} entries</span>
+            {participationSP > 0 && <span className="text-skill-green font-mono font-bold">+{participationSP} SP participation</span>}
+          </div>
+          <div className="w-full h-1.5 rounded-full bg-surface-2">
+            <div className="h-full rounded-full bg-badge-gold transition-all" style={{ width: `${fillPercent}%` }} />
+          </div>
         </div>
-        <div className="w-full h-1.5 rounded-full bg-surface-2">
-          <div className="h-full rounded-full bg-badge-gold transition-all" style={{ width: `${fillPercent}%` }} />
-        </div>
-      </div>
+      )}
 
       <div className="h-px bg-border mx-4" />
 
@@ -64,7 +71,7 @@ export default function ContestCard({ gig, onClick }: ContestCardProps) {
           <span className="text-xs text-muted-foreground">{gig.seller}</span>
         </div>
         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-0.5"><Users className="w-3 h-3" />{currentEntries} entries</span>
+          {currentEntries > 0 && <span className="flex items-center gap-0.5"><Users className="w-3 h-3" />{currentEntries} entries</span>}
           <span className="flex items-center gap-0.5"><Coins className="w-3 h-3" />{gig.points} SP</span>
         </div>
       </div>

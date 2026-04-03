@@ -1,4 +1,4 @@
-import { Handshake, ArrowRight, Star, Shield, Clock, Eye, GraduationCap, Trophy } from "lucide-react";
+import { Handshake, ArrowRight, Star, Shield, Clock, GraduationCap, Trophy } from "lucide-react";
 import { type Gig } from "../data/mockData";
 import { eloTier } from "../utils/marketplace-utils";
 import UserPreviewPopover from "./UserPreviewPopover";
@@ -21,7 +21,6 @@ export default function DirectSwapCard({ gig, onClick }: Props) {
 
         <h3 className="font-heading font-bold text-foreground text-base mt-3 leading-tight">{gig.skill}</h3>
 
-        {/* Exchange visual */}
         <div className="mt-2.5 flex items-center gap-2 rounded-xl bg-surface-1 border border-border px-3 py-2">
           <div className="flex-1">
             <p className="text-[10px] font-mono uppercase text-muted-foreground">Offering</p>
@@ -77,10 +76,10 @@ export default function DirectSwapCard({ gig, onClick }: Props) {
         </div>
       </div>
 
-      {/* Footer stats */}
+      {/* Footer stats - only show real data */}
       <div className="px-4 pb-3 flex items-center gap-3 text-[10px] text-muted-foreground">
-        <span className="flex items-center gap-0.5"><Eye className="w-3 h-3" />{gig.views}</span>
         <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{gig.deliveryDays}d delivery</span>
+        {gig.completedSwaps > 0 && <span>{gig.completedSwaps} swaps</span>}
       </div>
     </button>
   );

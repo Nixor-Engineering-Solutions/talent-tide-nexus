@@ -23,7 +23,7 @@ const EnterprisePage = lazy(() => import("./features/enterprise/EnterprisePage")
 const EnterpriseDashboardPage = lazy(() => import("./features/enterprise/EnterpriseDashboardPage"));
 const GuildDashboardPage = lazy(() => import("./features/guild/GuildDashboardPage"));
 const MarketplacePage = lazy(() => import("./features/marketplace/MarketplacePage"));
-const GigDetailPage = lazy(() => import("./features/marketplace/components/GigDetailPage"));
+const GigDetailRouter = lazy(() => import("./features/marketplace/components/detail/GigDetailRouter"));
 const LegalPage = lazy(() => import("./features/legal/LegalPage"));
 const RoadmapPage = lazy(() => import("./features/roadmap/RoadmapPage"));
 const ContactPage = lazy(() => import("./features/contact/ContactPage"));
@@ -85,7 +85,7 @@ const AnimatedRoutes = () => {
           <Route path="/marketplace/projects" element={<ProjectsPage />} />
           <Route path="/marketplace/requests" element={<RequestsPage />} />
           <Route path="/marketplace/contests" element={<ContestsPage />} />
-          <Route path="/marketplace/:gigId" element={<GigDetailPage />} />
+          <Route path="/marketplace/:gigId" element={<GigDetailRouter />} />
           <Route path="/legal" element={<LegalPage />} />
           <Route path="/roadmap" element={<RoadmapPage />} />
           <Route path="/contact" element={<ContactPage />} />

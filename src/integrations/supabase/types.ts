@@ -80,6 +80,38 @@ export type Database = {
         }
         Relationships: []
       }
+      auction_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          created_at: string | null
+          id: string
+          listing_id: string
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          created_at?: string | null
+          id?: string
+          listing_id: string
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          created_at?: string | null
+          id?: string
+          listing_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_bids_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       badges: {
         Row: {
           category: string
@@ -485,6 +517,47 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      contest_entries: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          entrant_id: string
+          file_urls: string[] | null
+          id: string
+          listing_id: string
+          rank: number | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          entrant_id: string
+          file_urls?: string[] | null
+          id?: string
+          listing_id: string
+          rank?: number | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          entrant_id?: string
+          file_urls?: string[] | null
+          id?: string
+          listing_id?: string
+          rank?: number | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contest_entries_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conversations: {
         Row: {
